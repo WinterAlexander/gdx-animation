@@ -1,0 +1,15 @@
+apply plugin: "java"
+
+sourceCompatibility = 1.8
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+sourceSets.main.java.srcDirs = [ "src/" ]
+
+
+dependencies {
+
+    if(gdxVersion == null)
+        gdxVersion = '1.9.5'
+
+    compile "com.badlogicgames.gdx:gdx:$gdxVersion"
+}
