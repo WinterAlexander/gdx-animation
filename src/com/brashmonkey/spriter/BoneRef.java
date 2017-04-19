@@ -22,6 +22,7 @@ public class BoneRef
 	{
 		this.key = other.key;
 		this.timeline = other.timeline;
+
 		if(other.parent != null)
 			this.parent = new BoneRef(other.parent); //todo fix this
 		else

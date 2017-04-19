@@ -31,11 +31,16 @@ public class MainlineKey
 		this.boneRefs = new Array<>(other.boneRefs.size);
 		this.objectRefs = new Array<>(other.objectRefs.size);
 
+		//Map<BoneRef, BoneRef> boneIso = new IdentityHashMap<>();
+
 		for(BoneRef ref : other.boneRefs)
-			boneRefs.add(new BoneRef(ref));
+			boneRefs.add(new BoneRef(ref/*, boneIso*/));
+
+
+		//Map<ObjectRef, ObjectRef> objIso = new IdentityHashMap<>();
 
 		for(ObjectRef ref : other.objectRefs)
-			objectRefs.add(new ObjectRef(ref));
+			objectRefs.add(new ObjectRef(ref/*, objIso*/));
 	}
 
 	/**

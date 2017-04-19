@@ -6,10 +6,13 @@ sourceCompatibility = 1.8
 sourceSets.main.java.srcDirs = [ "src/" ]
 
 
-dependencies {
+repositories {
+    mavenCentral()
+}
 
-    if(gdxVersion == null)
-        gdxVersion = '1.9.5'
+dependencies {
+    if(!project.hasProperty('gdxVersion'))
+        project.ext.gdxVersion = '1.9.5'
 
     compile "com.badlogicgames.gdx:gdx:$gdxVersion"
 }
