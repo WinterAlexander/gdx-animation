@@ -180,7 +180,7 @@ public class Animation
 		else
 			norTime = currentKey.curve.tween(0f, 1f, norTime);
 
-		//Tween bone/object
+		//Tween object
 		SpriterObject bone1 = key.getObject();
 		SpriterObject bone2 = nextKey.getObject();
 		SpriterObject tweenTarget = this.tweenedKeys[ref.timeline].getObject();

@@ -1,7 +1,10 @@
 package com.brashmonkey.spriter;
 
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.IdentityMap;
 import com.brashmonkey.spriter.math.Curve;
+
+import java.util.IdentityHashMap;
 
 /**
  * Represents a mainline key in a Spriter SCML file. A mainline key holds a {@link #time}, a {@link
@@ -31,16 +34,13 @@ public class MainlineKey
 		this.boneRefs = new Array<>(other.boneRefs.size);
 		this.objectRefs = new Array<>(other.objectRefs.size);
 
-		//Map<BoneRef, BoneRef> boneIso = new IdentityHashMap<>();
+		IdentityMap<BoneRef, BoneRef> graphIsomorphism = new IdentityMap<>(); //TODO add possibility to not create a new object (pooling or parameter?)
 
 		for(BoneRef ref : other.boneRefs)
-			boneRefs.add(new BoneRef(ref/*, boneIso*/));
-
-
-		//Map<ObjectRef, ObjectRef> objIso = new IdentityHashMap<>();
+			boneRefs.add(ref.clone(graphIsomorphism));
 
 		for(ObjectRef ref : other.objectRefs)
-			objectRefs.add(new ObjectRef(ref/*, objIso*/));
+			objectRefs.add(ref.clone(graphIsomorphism));
 	}
 
 	/**

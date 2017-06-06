@@ -11,7 +11,6 @@ import static java.lang.Math.pow;
  */
 public class Interpolator
 {
-
 	public static float linear(float a, float b, float t)
 	{
 		return a + (b - a) * t;
