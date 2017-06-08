@@ -17,7 +17,6 @@ import com.brashmonkey.spriter.SCMLLoader.SCMLProjectParameters;
  */
 public class SCMLLoader extends SynchronousAssetLoader<SCMLProject, SCMLProjectParameters>
 {
-	private static final String TEXTURE_ALTAS = "gfx/spriter/spriter.atlas";
 	private SCMLReader reader = new SCMLReader();
 
 	public SCMLLoader(FileHandleResolver resolver)
@@ -26,16 +25,16 @@ public class SCMLLoader extends SynchronousAssetLoader<SCMLProject, SCMLProjectP
 	}
 
 	@Override
-	public SCMLProject load(AssetManager assetManager, String fileName, FileHandle file, SCMLProjectParameters parameter)
+	public SCMLProject load(AssetManager assetManager, String fileName, FileHandle file, SCMLProjectParameters params)
 	{
-		reader.setAtlas(assetManager.get(TEXTURE_ALTAS));
+		reader.setAtlas(assetManager.get(params.textureAtlasName));
 		return reader.load(file.read());
 	}
 
 	@Override
-	public Array<AssetDescriptor> getDependencies(String fileName, FileHandle file, SCMLProjectParameters parameter)
+	public Array<AssetDescriptor> getDependencies(String fileName, FileHandle file, SCMLProjectParameters params)
 	{
-		AssetDescriptor descriptor = new AssetDescriptor<>(TEXTURE_ALTAS, TextureAtlas.class);
+		AssetDescriptor descriptor = new AssetDescriptor<>(params.textureAtlasName, TextureAtlas.class);
 		Array<AssetDescriptor> array = new Array<>();
 		array.add(descriptor);
 		return array;
@@ -43,6 +42,11 @@ public class SCMLLoader extends SynchronousAssetLoader<SCMLProject, SCMLProjectP
 
 	public static class SCMLProjectParameters extends AssetLoaderParameters<SCMLProject>
 	{
+		public SCMLProjectParameters(String textureAtlasName)
+		{
+			this.textureAtlasName = textureAtlasName;
+		}
 
+		public String textureAtlasName;
 	}
 }

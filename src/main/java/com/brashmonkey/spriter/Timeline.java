@@ -14,20 +14,17 @@ public class Timeline
 
 	private final Array<TimelineKey> keys;
 
-	private ObjectType type;
 
 	public Timeline(String name, int keyCount)
 	{
 		this.name = name;
 		this.keys = new Array<>(keyCount);
-		this.type = ObjectType.SPRITE;
 	}
 
 	public Timeline(Timeline timeline)
 	{
 		this.name = timeline.name;
 		this.keys = new Array<>(timeline.getKeys().size);
-		this.type = timeline.type;
 
 		for(TimelineKey key : timeline.getKeys())
 			keys.add(new TimelineKey(key));
@@ -46,15 +43,5 @@ public class Timeline
 	public Array<TimelineKey> getKeys()
 	{
 		return keys;
-	}
-
-	public ObjectType getType()
-	{
-		return type;
-	}
-
-	public void setType(ObjectType type)
-	{
-		this.type = type;
 	}
 }

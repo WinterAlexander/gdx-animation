@@ -11,9 +11,6 @@ import com.brashmonkey.spriter.math.Curve.CurveType;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static com.brashmonkey.spriter.ObjectType.BONE;
-import static com.brashmonkey.spriter.ObjectType.SPRITE;
-
 /**
  * This class parses a SCML file and creates a {@link SCMLProject} instance. If you want to keep track of what is going
  * on during the build process of the objects parsed from the SCML file, you could extend this class and override the
@@ -214,7 +211,6 @@ public class SCMLReader
 			Array<Element> keys = xmlElement.getChildrenByName("key");
 
 			Timeline timeline = new Timeline(xmlElement.get("name"), keys.size);
-			timeline.setType(ObjectType.getType(xmlElement.get("object_type", "SPRITE")));
 
 			loadTimelineKeys(keys, timeline);
 			animation.getTimelines().add(timeline);
@@ -236,14 +232,14 @@ public class SCMLReader
 
 			TimelineKey key = new TimelineKey(xmlKey.getInt("time", 0), xmlKey.getInt("spin", 1), curve);
 			Element obj = xmlKey.getChild(0); //each key tag contains a single object or bone tag
-			ObjectType type = ObjectType.getType(obj.getName());
+			String type = obj.getName();
 
 			Vector2 position = new Vector2(obj.getFloat("x", 0f), obj.getFloat("y", 0f));
 			Vector2 scale = new Vector2(obj.getFloat("scale_x", 1f), obj.getFloat("scale_y", 1f));
 
 			float angle = obj.getFloat("angle", 0f);
 
-			if(type == SPRITE)
+			if(type.equalsIgnoreCase("object") || type.equalsIgnoreCase("sprite")) //TODO check which is valid
 			{
 				SpriterAsset asset = currentProject.getAsset(obj.getInt("folder"), obj.getInt("file")); //corresponding sprite
 
@@ -252,7 +248,7 @@ public class SCMLReader
 
 				key.setObject(new SpriterSprite(asset, position, scale, pivot, angle, alpha));
 			}
-			else if(type == BONE)
+			else if(type.equalsIgnoreCase("bone"))
 				key.setObject(new SpriterBone(position, scale, new Vector2(obj.getFloat("pivot_x", 0f), obj.getFloat("pivot_y", 0.5f)), angle));
 
 

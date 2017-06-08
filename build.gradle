@@ -3,7 +3,8 @@ apply plugin: "java"
 sourceCompatibility = 1.8
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
-sourceSets.main.java.srcDirs = [ "src/" ]
+sourceSets.main.java.srcDirs = [ "src/main/java/" ]
+sourceSets.test.java.srcDirs = [ "src/test/java/" ]
 
 
 repositories {
@@ -11,8 +12,11 @@ repositories {
 }
 
 dependencies {
-    if(!project.hasProperty('gdxVersion'))
-        project.ext.gdxVersion = '1.9.5'
+    version = '1.9.5'
 
-    compile "com.badlogicgames.gdx:gdx:$gdxVersion"
+    if(project.hasProperty('gdxVersion'))
+        version = "$gdxVersion"
+
+    compile "com.badlogicgames.gdx:gdx:$version"
+    testCompile group: 'junit', name: 'junit', version: '4.12'
 }
