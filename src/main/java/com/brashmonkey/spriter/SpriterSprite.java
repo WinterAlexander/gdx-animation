@@ -1,5 +1,6 @@
 package com.brashmonkey.spriter;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
@@ -39,19 +40,15 @@ public class SpriterSprite extends SpriterObject
 		if(asset == null || asset.getTexture() == null)
 			return;
 
-		Sprite sprite = new Sprite(asset); //TODO render without Sprite class
+		float width = asset.getRegionWidth();
+		float height = asset.getRegionHeight();
 
-		float originX = sprite.getWidth() * pivot.x;
-		float originY = sprite.getHeight() * pivot.y;
+		float originX = width * pivot.x;
+		float originY = height * pivot.y;
 
-		sprite.setX(position.x - originX);
-		sprite.setY(position.y - originY);
-
-		sprite.setOrigin(originX, originY);
-		sprite.setRotation(angle);
-
-		sprite.setScale(scale.x, scale.y);
-		sprite.draw(batch, alpha);
+		batch.setColor(batch.getColor().r, batch.getColor().g, batch.getColor().b, alpha);
+		batch.draw(asset, position.x - originX, position.y - originY, originX, originY, width, height, scale.x, scale.y, angle);
+		batch.setColor(batch.getColor().r, batch.getColor().g, batch.getColor().b, 1f);
 	}
 
 	/**

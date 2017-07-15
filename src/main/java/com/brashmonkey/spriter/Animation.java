@@ -81,6 +81,9 @@ public class Animation
 
 	public void draw(Batch batch)
 	{
+		if(isDone())
+			return;
+
 		float prevColor = batch.getPackedColor();
 		Color tmp = batch.getColor();
 		tmp.a = alpha;
