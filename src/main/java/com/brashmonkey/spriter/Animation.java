@@ -120,7 +120,7 @@ public class Animation
 
 		int intTime = (int)time;
 
-		MainlineKey currentKey = mainline.getKeyBeforeTime(intTime);
+		MainlineKey currentKey = mainline.getKeyBeforeTime(intTime, looping);
 
 		for(ObjectRef ref : currentKey.objectRefs)
 			update(currentKey, ref, intTime);

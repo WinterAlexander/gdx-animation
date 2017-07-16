@@ -27,14 +27,16 @@ public class Mainline
 	}
 
 	/**
-	 * Returns a {@link MainlineKey} before the given time.
+	 * Returns the last previous MainlineKey before specified time
 	 *
 	 * @param time the time a key has to be before
-	 * @return a key which has a time value before the given one, wraps around
+	 * @param wrapAround true if should wrap around the timeline, otherwise false
+	 *
+	 * @return last previous key before specified time, when not found first one is returned
 	 */
-	public MainlineKey getKeyBeforeTime(int time)
+	public MainlineKey getKeyBeforeTime(int time, boolean wrapAround)
 	{
-		MainlineKey found = keys.get(keys.size - 1);
+		MainlineKey found = wrapAround ? keys.get(keys.size - 1) : keys.get(0);
 
 		for(MainlineKey key : keys)
 		{

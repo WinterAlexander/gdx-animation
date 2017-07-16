@@ -80,24 +80,24 @@ public class Curve
 			case INSTANT:
 				return a;
 			case LINEAR:
-				return linearAngle(a, b, value);
+				return linear(a, b, value);
 			case QUADRATIC:
-				return quadraticAngle(a, linearAngle(a, b, constraints.c1), b, value);
+				return quadratic(a, linear(a, b, constraints.c1), b, value);
 			case CUBIC:
-				return cubicAngle(a, linearAngle(a, b, constraints.c1), linearAngle(a, b, constraints.c2), b, value);
+				return cubic(a, linear(a, b, constraints.c1), linear(a, b, constraints.c2), b, value);
 			case QUARTIC:
-				return quarticAngle(a, linearAngle(a, b, constraints.c1), linearAngle(a, b, constraints.c2), linearAngle(a, b, constraints.c3), b, value);
+				return quartic(a, linear(a, b, constraints.c1), linear(a, b, constraints.c2), linear(a, b, constraints.c3), b, value);
 			case QUINTIC:
-				return quinticAngle(a, linearAngle(a, b, constraints.c1), linearAngle(a, b, constraints.c2), linearAngle(a, b, constraints.c3), linearAngle(a, b, constraints.c4), b, value);
+				return quintic(a, linear(a, b, constraints.c1), linear(a, b, constraints.c2), linear(a, b, constraints.c3), linear(a, b, constraints.c4), b, value);
 			case BEZIER:
 				float cubicSolution = solveCubic(3f * (constraints.c1 - constraints.c3) + 1f, 3f * (constraints.c3 - 2f * constraints.c1), 3f * constraints.c1, -value);
 				if(cubicSolution == -1) //TODO (check if actually happen)
 					cubicSolution = lastCubicSolution;
 				else
 					lastCubicSolution = cubicSolution;
-				return linearAngle(a, b, bezier(cubicSolution, 0f, constraints.c2, constraints.c4, 1f));
+				return linear(a, b, bezier(cubicSolution, 0f, constraints.c2, constraints.c4, 1f));
 			default:
-				return linearAngle(a, b, value);
+				return linear(a, b, value);
 		}
 	}
 
