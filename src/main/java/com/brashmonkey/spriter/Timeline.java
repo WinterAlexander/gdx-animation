@@ -14,11 +14,10 @@ public class Timeline
 
 	private final Array<TimelineKey> keys;
 
-
-	public Timeline(String name, int keyCount)
+	public Timeline(String name, Array<TimelineKey> timelineKeys)
 	{
 		this.name = name;
-		this.keys = new Array<>(keyCount);
+		this.keys = timelineKeys;
 	}
 
 	public Timeline(Timeline timeline)

@@ -72,8 +72,8 @@ public class Curve
 				return quintic(a, linear(a, b, constraints.c1), linear(a, b, constraints.c2), linear(a, b, constraints.c3), linear(a, b, constraints.c4), b, t);
 			case BEZIER:
 				float cubicSolution = solveCubic(3f * (constraints.c1 - constraints.c3) + 1f, 3f * (constraints.c3 - 2f * constraints.c1), 3f * constraints.c1, -t);
-				if(cubicSolution == -1) //TODO WTFFFFFF
-					cubicSolution = lastCubicSolution;
+				if(cubicSolution == -1)
+					cubicSolution = lastCubicSolution; //TODO (Does it happen in practice ? If yes why and what's the real way to do solve?)
 				else
 					lastCubicSolution = cubicSolution;
 				return linear(a, b, bezier(cubicSolution, 0f, constraints.c2, constraints.c4, 1f));
@@ -87,17 +87,17 @@ public class Curve
 	 *
 	 * @param a the start point
 	 * @param b the end point
-	 * @param t the weight which lies between 0.0 and 1.0
+	 * @param weight the weight which lies between 0.0 and 1.0
 	 * @param target the target point to save the result in
 	 */
-	public void tweenPoint(Vector2 a, Vector2 b, float t, Vector2 target)
+	public void tweenPoint(Vector2 a, Vector2 b, float weight, Vector2 target)
 	{
-		target.set(this.tween(a.x, b.x, t), this.tween(a.y, b.y, t));
+		target.set(tween(a.x, b.x, weight), tween(a.y, b.y, weight));
 	}
 
 	private float tweenSub(float a, float b, float t)
 	{
-		if(this.subCurve != null)
+		if(subCurve != null)
 			return subCurve.tween(a, b, t);
 		else
 			return t;
@@ -133,7 +133,7 @@ public class Curve
 	/**
 	 * @see {@link #tween(float, float, float)}
 	 */
-	public float tweenAngle(float a, float b, float t)
+	public float tweenScalar(float a, float b, float t)
 	{
 		t = tweenSub(0f, 1f, t);
 		switch(type)
