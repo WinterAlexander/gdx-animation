@@ -23,8 +23,7 @@ public class Animation
 	private Mainline mainline;
 	private final Array<Timeline> timelines;
 
-	private MainlineKey currentKey;
-	private SpriterSprite[] tweenedSprites; //sprites made on runtime by tweening original sprites from animation
+	private SpriterObject[] tweenedObjects; //sprites made on runtime by tweening original sprites from animation
 
 	/**
 	 * Milliseconds
@@ -58,20 +57,22 @@ public class Animation
 		this.timelines = new Array<>(animation.getTimelines().size);
 
 		for(Timeline timeline : animation.getTimelines())
-			timelines.add(new Timeline(timeline));
+			timelines.add(timeline.clone());
 
 		prepare();
 	}
 
 	public void prepare()
 	{
-		tweenedSprites = new SpriterSprite[timelines.size];
+		tweenedObjects = new SpriterObject[timelines.size];
 
 		for(int i = 0; i < timelines.size; i++)
-			tweenedSprites[i] = new SpriterSprite();
-
-		if(mainline.getKeys().size > 0)
-			currentKey = mainline.getKeys().get(0);
+		{
+			if(timelines.get(i) instanceof SpriteTimeline)
+				tweenedObjects[i] = new SpriterSprite();
+			else
+				tweenedObjects[i] = new SpriterObject();
+		}
 	}
 
 	public void draw(Batch batch)
@@ -83,8 +84,9 @@ public class Animation
 		batch.getColor().a = alpha;
 		batch.setColor(batch.getColor()); //update
 
-		for(SpriterSprite sprite : tweenedSprites)
-			sprite.draw(batch);
+		for(SpriterObject object : tweenedObjects)
+			if(object instanceof SpriterSprite)
+				((SpriterSprite)object).draw(batch);
 
 		batch.setColor(prevColor);
 	}
@@ -106,7 +108,7 @@ public class Animation
 	 */
 	public void update(float delta)
 	{
-		if(tweenedSprites == null)
+		if(tweenedObjects == null)
 			throw new IllegalStateException("Animation not prepared");
 
 		time += speed * delta;
@@ -121,13 +123,13 @@ public class Animation
 
 		int intTime = (int)time;
 
-		currentKey = mainline.getKeyBeforeTime(intTime);
+		MainlineKey currentKey = mainline.getKeyBeforeTime(intTime);
 
 		for(ObjectRef ref : currentKey.objectRefs)
-			update(ref, intTime);
+			update(currentKey, ref, intTime);
 	}
 
-	protected void update(ObjectRef ref, int time)
+	protected void update(MainlineKey currentKey, ObjectRef ref, int time)
 	{
 		//Get the timelines, the refs pointing to
 		Timeline timeline = timelines.get(ref.timeline);
@@ -140,11 +142,11 @@ public class Animation
 			if(!looping)
 			{
 				//no need to tween, stay freezed at first sprite
-				SpriterSprite tweenTarget = tweenedSprites[ref.timeline];
+				SpriterObject tweenTarget = tweenedObjects[ref.timeline];
 
 				tweenTarget.set(key.getObject());
 
-				SpriterObject parent = ref.parent != null ? tweenedSprites[ref.parent.timeline] : root;
+				SpriterObject parent = ref.parent != null ? tweenedObjects[ref.parent.timeline] : root;
 				tweenTarget.unmap(parent);
 				return;
 			}
@@ -172,15 +174,15 @@ public class Animation
 			if(isNaN(norTime) || isInfinite(norTime))
 				norTime = 1f;
 
-			norTime = currentKey.curve.tween(tMid, 1f, norTime);
+			norTime = currentKey.curve.tweenScalar(tMid, 1f, norTime);
 		}
 		else
-			norTime = currentKey.curve.tween(0f, 1f, norTime);
+			norTime = currentKey.curve.tweenScalar(0f, 1f, norTime);
 
 		//Tween object
 		SpriterObject obj1 = key.getObject();
 		SpriterObject obj2 = nextKey.getObject();
-		SpriterObject tweened = tweenedSprites[ref.timeline];
+		SpriterObject tweened = tweenedObjects[ref.timeline];
 
 		Curve curve = key.getCurve();
 
@@ -195,7 +197,7 @@ public class Animation
 			((SpriterSprite)tweened).setAsset(((SpriterSprite)obj1).getAsset());
 		}
 
-		tweened.unmap(ref.parent != null ? tweenedSprites[ref.parent.timeline] : root);
+		tweened.unmap(ref.parent != null ? tweenedObjects[ref.parent.timeline] : root);
 	}
 
 	public void reset()

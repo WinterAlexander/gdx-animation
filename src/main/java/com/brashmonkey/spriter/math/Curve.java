@@ -46,43 +46,6 @@ public class Curve
 	}
 
 	/**
-	 * Returns a new value based on the given values. Tweens the weight with the set sub curve.
-	 *
-	 * @param a the start value
-	 * @param b the end value
-	 * @param t the weight which lies between 0.0 and 1.0
-	 * @return tweened value
-	 */
-	public float tween(float a, float b, float t)
-	{
-		t = tweenSub(0f, 1f, t);
-		switch(type)
-		{
-			case INSTANT:
-				return a;
-			case LINEAR:
-				return linear(a, b, t);
-			case QUADRATIC:
-				return quadratic(a, linear(a, b, constraints.c1), b, t);
-			case CUBIC:
-				return cubic(a, linear(a, b, constraints.c1), linear(a, b, constraints.c2), b, t);
-			case QUARTIC:
-				return quartic(a, linear(a, b, constraints.c1), linear(a, b, constraints.c2), linear(a, b, constraints.c3), b, t);
-			case QUINTIC:
-				return quintic(a, linear(a, b, constraints.c1), linear(a, b, constraints.c2), linear(a, b, constraints.c3), linear(a, b, constraints.c4), b, t);
-			case BEZIER:
-				float cubicSolution = solveCubic(3f * (constraints.c1 - constraints.c3) + 1f, 3f * (constraints.c3 - 2f * constraints.c1), 3f * constraints.c1, -t);
-				if(cubicSolution == -1)
-					cubicSolution = lastCubicSolution; //TODO (Does it happen in practice ? If yes why and what's the real way to do solve?)
-				else
-					lastCubicSolution = cubicSolution;
-				return linear(a, b, bezier(cubicSolution, 0f, constraints.c2, constraints.c4, 1f));
-			default:
-				return linear(a, b, t);
-		}
-	}
-
-	/**
 	 * Interpolates the given two points with the given weight and saves the result in the target point.
 	 *
 	 * @param a the start point
@@ -92,13 +55,13 @@ public class Curve
 	 */
 	public void tweenPoint(Vector2 a, Vector2 b, float weight, Vector2 target)
 	{
-		target.set(tween(a.x, b.x, weight), tween(a.y, b.y, weight));
+		target.set(tweenScalar(a.x, b.x, weight), tweenScalar(a.y, b.y, weight));
 	}
 
 	private float tweenSub(float a, float b, float t)
 	{
 		if(subCurve != null)
-			return subCurve.tween(a, b, t);
+			return subCurve.tweenScalar(a, b, t);
 		else
 			return t;
 	}
@@ -127,12 +90,9 @@ public class Curve
 		else
 			return a;
 
-		return tween(a, b, t);
+		return tweenScalar(a, b, t);
 	}
 
-	/**
-	 * @see {@link #tween(float, float, float)}
-	 */
 	public float tweenScalar(float a, float b, float t)
 	{
 		t = tweenSub(0f, 1f, t);

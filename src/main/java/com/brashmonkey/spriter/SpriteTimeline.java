@@ -23,6 +23,12 @@ public class SpriteTimeline extends Timeline
 		this.zIndex = timeline.zIndex;
 	}
 
+	@Override
+	protected SpriteTimeline clone()
+	{
+		return new SpriteTimeline(this);
+	}
+
 	public int getZIndex()
 	{
 		return zIndex;

@@ -29,6 +29,12 @@ public class Timeline
 			keys.add(new TimelineKey(key));
 	}
 
+	@Override
+	protected Timeline clone()
+	{
+		return new Timeline(this);
+	}
+
 	public String getName()
 	{
 		return name;
