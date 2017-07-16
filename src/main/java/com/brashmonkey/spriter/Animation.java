@@ -4,9 +4,6 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.utils.Array;
 import com.brashmonkey.spriter.math.Curve;
 
-import static java.lang.Float.isInfinite;
-import static java.lang.Float.isNaN;
-
 /**
  * Represents an animation of a Spriter SCML file. An animation holds {@link Timeline}s and a {@link Mainline} to
  * animate objects. Furthermore it holds a {@link #length}, a {@link #name} and whether it is {@link
@@ -137,6 +134,8 @@ public class Animation
 		TimelineKey key = timeline.getKeys().get(ref.key); //get the last previous key
 		TimelineKey nextKey;
 
+		int timeOfNext;
+
 		if(ref.key + 1 == timeline.getKeys().size)
 		{
 			if(!looping)
@@ -152,32 +151,16 @@ public class Animation
 			}
 
 			nextKey = timeline.getKeys().get(0);
+			timeOfNext = nextKey.getTime() + length; //wrap around
 		}
 		else
 		{
 			nextKey = timeline.getKeys().get(ref.key + 1);
+			timeOfNext = nextKey.getTime();
 		}
 
-		float timeDiff = nextKey.getTime() - key.getTime();
-
-		//assert timeDiff != 0;
-
-		//Normalize the time
-		float norTime = (float)(time - key.getTime()) / timeDiff;
-
-		if(currentKey.time > key.getTime())
-		{
-			float tMid = (float)(currentKey.time - key.getTime()) / timeDiff;
-
-			norTime = (float)(time - currentKey.time) / (float)(nextKey.getTime() - currentKey.time);
-
-			if(isNaN(norTime) || isInfinite(norTime))
-				norTime = 1f;
-
-			norTime = currentKey.curve.tweenScalar(tMid, 1f, norTime);
-		}
-		else
-			norTime = currentKey.curve.tweenScalar(0f, 1f, norTime);
+		float timeDiff = timeOfNext - key.getTime();
+		float timeRatio = currentKey.curve.interpolate(0f, 1f, (time - key.getTime()) / timeDiff);
 
 		//Tween object
 		SpriterObject obj1 = key.getObject();
@@ -186,14 +169,14 @@ public class Animation
 
 		Curve curve = key.getCurve();
 
-		tweened.angle = curve.tweenAngle(obj1.angle, obj2.angle, norTime, key.getSpin());
-		curve.tweenPoint(obj1.position, obj2.position, norTime, tweened.position);
-		curve.tweenPoint(obj1.scale, obj2.scale, norTime, tweened.scale);
-		curve.tweenPoint(obj1.pivot, obj2.pivot, norTime, tweened.pivot);
+		tweened.angle = curve.interpolateAngle(obj1.angle, obj2.angle, timeRatio, key.getSpin());
+		curve.interpolateVector(obj1.position, obj2.position, timeRatio, tweened.position);
+		curve.interpolateVector(obj1.scale, obj2.scale, timeRatio, tweened.scale);
+		curve.interpolateVector(obj1.pivot, obj2.pivot, timeRatio, tweened.pivot);
 
 		if(timeline instanceof SpriteTimeline)
 		{
-			((SpriterSprite)tweened).setAlpha(curve.tweenScalar(((SpriterSprite)obj1).getAlpha(), ((SpriterSprite)obj2).getAlpha(), norTime));
+			((SpriterSprite)tweened).setAlpha(curve.interpolate(((SpriterSprite)obj1).getAlpha(), ((SpriterSprite)obj2).getAlpha(), timeRatio));
 			((SpriterSprite)tweened).setAsset(((SpriterSprite)obj1).getAsset());
 		}
 

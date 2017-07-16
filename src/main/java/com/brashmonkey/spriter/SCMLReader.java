@@ -147,8 +147,10 @@ public class SCMLReader
 
 			loadTimelines(mainlineKeys, xmlTimelines, mainline, timelines);
 
+			//in spriter, you can place a key both at 0 and at the length for a total possible keys of length + 1,
+			//to handle this, we assume the actual length is +1 the one displayed in spriter
 			Animation animation = new Animation(xmlElement.get("name"),
-					xmlElement.getInt("length"),
+					xmlElement.getInt("length") + 1,
 					xmlElement.getBoolean("looping", true),
 					mainline,
 					timelines);

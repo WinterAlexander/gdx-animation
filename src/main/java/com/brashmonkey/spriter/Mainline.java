@@ -30,15 +30,14 @@ public class Mainline
 	 * Returns a {@link MainlineKey} before the given time.
 	 *
 	 * @param time the time a key has to be before
-	 * @return a key which has a time value before the given one. The first key is returned if no key was found.
+	 * @return a key which has a time value before the given one, wraps around
 	 */
 	public MainlineKey getKeyBeforeTime(int time)
 	{
-		MainlineKey found = keys.get(0);
+		MainlineKey found = keys.get(keys.size - 1);
 
-		for(int i = 1; i < keys.size; i++)
+		for(MainlineKey key : keys)
 		{
-			MainlineKey key = keys.get(i);
 			if(key.time > time)
 				break;
 			found = key;

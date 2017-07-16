@@ -149,6 +149,8 @@ public class Interpolator
 				return result;
 		}
 
+		//DEBUG
+		System.out.println("WARNING: No cubic solution found for " + a + ", " + b + ", " + c + ", " + d);
 		return -1;
 	}
 
@@ -165,8 +167,10 @@ public class Interpolator
 		float squaredB = b * b;
 		float twoA = 2 * a;
 		float fourAC = 4 * a * c;
+
 		float sqrt = (float)Math.sqrt(squaredB - fourAC);
 		float result = (-b + sqrt) / twoA;
+
 		if(result >= 0 && result <= 1)
 			return result;
 

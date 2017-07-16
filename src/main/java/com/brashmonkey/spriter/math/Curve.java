@@ -2,9 +2,7 @@ package com.brashmonkey.spriter.math;
 
 import com.badlogic.gdx.math.Vector2;
 
-import static com.badlogic.gdx.math.MathUtils.cos;
 import static com.brashmonkey.spriter.math.Interpolator.*;
-import static java.lang.Math.pow;
 
 /**
  * Represents a curve in a Spriter SCML file. An instance of this class is responsible for tweening given data. The most
@@ -16,7 +14,6 @@ import static java.lang.Math.pow;
 public class Curve
 {
 	private CurveType type;
-	private Curve subCurve;
 
 	private float lastCubicSolution = 0f;
 
@@ -27,14 +24,6 @@ public class Curve
 	public final Constraints constraints = new Constraints(0, 0, 0, 0);
 
 	/**
-	 * Creates a new linear curve.
-	 */
-	public Curve()
-	{
-		this(CurveType.LINEAR);
-	}
-
-	/**
 	 * Creates a new curve with the given type.
 	 *
 	 * @param type the curve type
@@ -42,7 +31,6 @@ public class Curve
 	public Curve(CurveType type)
 	{
 		this.type = type;
-		this.subCurve = null;
 	}
 
 	/**
@@ -50,20 +38,12 @@ public class Curve
 	 *
 	 * @param a the start point
 	 * @param b the end point
-	 * @param weight the weight which lies between 0.0 and 1.0
+	 * @param value the weight which lies between 0.0 and 1.0
 	 * @param target the target point to save the result in
 	 */
-	public void tweenPoint(Vector2 a, Vector2 b, float weight, Vector2 target)
+	public void interpolateVector(Vector2 a, Vector2 b, float value, Vector2 target)
 	{
-		target.set(tweenScalar(a.x, b.x, weight), tweenScalar(a.y, b.y, weight));
-	}
-
-	private float tweenSub(float a, float b, float t)
-	{
-		if(subCurve != null)
-			return subCurve.tweenScalar(a, b, t);
-		else
-			return t;
+		target.set(interpolate(a.x, b.x, value), interpolate(a.y, b.y, value));
 	}
 
 	/**
@@ -71,11 +51,11 @@ public class Curve
 	 *
 	 * @param a the start angle
 	 * @param b the end angle
-	 * @param t the weight which lies between 0.0 and 1.0
+	 * @param value the weight which lies between 0.0 and 1.0
 	 * @param spin the spin, which is either 0, 1 or -1
 	 * @return tweened angle
 	 */
-	public float tweenAngle(float a, float b, float t, int spin)
+	public float interpolateAngle(float a, float b, float value, int spin)
 	{
 		if(spin > 0)
 		{
@@ -90,35 +70,34 @@ public class Curve
 		else
 			return a;
 
-		return tweenScalar(a, b, t);
+		return interpolate(a, b, value);
 	}
 
-	public float tweenScalar(float a, float b, float t)
+	public float interpolate(float a, float b, float value)
 	{
-		t = tweenSub(0f, 1f, t);
 		switch(type)
 		{
 			case INSTANT:
 				return a;
 			case LINEAR:
-				return linearAngle(a, b, t);
+				return linearAngle(a, b, value);
 			case QUADRATIC:
-				return quadraticAngle(a, linearAngle(a, b, constraints.c1), b, t);
+				return quadraticAngle(a, linearAngle(a, b, constraints.c1), b, value);
 			case CUBIC:
-				return cubicAngle(a, linearAngle(a, b, constraints.c1), linearAngle(a, b, constraints.c2), b, t);
+				return cubicAngle(a, linearAngle(a, b, constraints.c1), linearAngle(a, b, constraints.c2), b, value);
 			case QUARTIC:
-				return quarticAngle(a, linearAngle(a, b, constraints.c1), linearAngle(a, b, constraints.c2), linearAngle(a, b, constraints.c3), b, t);
+				return quarticAngle(a, linearAngle(a, b, constraints.c1), linearAngle(a, b, constraints.c2), linearAngle(a, b, constraints.c3), b, value);
 			case QUINTIC:
-				return quinticAngle(a, linearAngle(a, b, constraints.c1), linearAngle(a, b, constraints.c2), linearAngle(a, b, constraints.c3), linearAngle(a, b, constraints.c4), b, t);
+				return quinticAngle(a, linearAngle(a, b, constraints.c1), linearAngle(a, b, constraints.c2), linearAngle(a, b, constraints.c3), linearAngle(a, b, constraints.c4), b, value);
 			case BEZIER:
-				float cubicSolution = solveCubic(3f * (constraints.c1 - constraints.c3) + 1f, 3f * (constraints.c3 - 2f * constraints.c1), 3f * constraints.c1, -t);
-				if(cubicSolution == -1) //TODO WTFFFFFF
+				float cubicSolution = solveCubic(3f * (constraints.c1 - constraints.c3) + 1f, 3f * (constraints.c3 - 2f * constraints.c1), 3f * constraints.c1, -value);
+				if(cubicSolution == -1) //TODO (check if actually happen)
 					cubicSolution = lastCubicSolution;
 				else
 					lastCubicSolution = cubicSolution;
 				return linearAngle(a, b, bezier(cubicSolution, 0f, constraints.c2, constraints.c4, 1f));
 			default:
-				return linearAngle(a, b, t);
+				return linearAngle(a, b, value);
 		}
 	}
 
