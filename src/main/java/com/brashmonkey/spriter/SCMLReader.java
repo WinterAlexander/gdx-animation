@@ -3,6 +3,7 @@ package com.brashmonkey.spriter;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.XmlReader;
 import com.badlogic.gdx.utils.XmlReader.Element;
 import com.brashmonkey.spriter.math.Curve;
@@ -23,6 +24,11 @@ public class SCMLReader
 {
 	private TextureAtlas atlas;
 	private SCMLProject currentProject;
+
+	/**
+	 * Since zIndex are for timeline but stored in a different section of the xml, they need to be temporarily mapped while loading
+	 */
+	private ObjectMap<Integer, Integer> zIndexTempMap = new ObjectMap<>();
 
 	/**
 	 * Creates a new SCML reader
@@ -114,9 +120,10 @@ public class SCMLReader
 		for(Element xmlElement : entities)
 		{
 			SpriterEntity entity = new SpriterEntity(xmlElement.get("name"));
-			currentProject.getSourceEntities().add(entity);
 
 			loadAnimations(xmlElement.getChildrenByName("animation"), entity);
+
+			currentProject.getSourceEntities().add(entity);
 		}
 	}
 
@@ -159,6 +166,8 @@ public class SCMLReader
 	 */
 	private void loadTimelines(Array<Element> xmlMainlineKeys, Array<Element> xmlTimelines, Mainline mainline, Array<Timeline> timelines)
 	{
+		zIndexTempMap.clear();
+
 		for(Element xmlElement : xmlMainlineKeys)
 		{
 			Array<Element> xmlObjectRefs = xmlElement.getChildrenByName("object_ref");
@@ -169,22 +178,24 @@ public class SCMLReader
 
 			Array<ObjectRef> objectRefs = new Array<>(xmlBoneRefs.size + xmlObjectRefs.size);
 
-			for(Element boneRef : xmlBoneRefs)
+			for(Element xmlBoneRef : xmlBoneRefs)
 			{
-				int parentId = boneRef.getInt("parent", -1);
+				int parentId = xmlBoneRef.getInt("parent", -1);
 				ObjectRef parent = parentId != -1 ? objectRefs.get(parentId) : null;
 
-				objectRefs.add(new ObjectRef(boneRef.getInt("timeline"), boneRef.getInt("key"), parent));
+				objectRefs.add(new ObjectRef(xmlBoneRef.getInt("timeline"), xmlBoneRef.getInt("key"), parent));
 			}
 
-			for(Element objectRef : xmlObjectRefs)
+			for(Element xmlObjectRef : xmlObjectRefs)
 			{
-				int parentId = objectRef.getInt("parent", -1);
+				int parentId = xmlObjectRef.getInt("parent", -1);
 				ObjectRef parent = parentId != -1 ? objectRefs.get(parentId) : null;
 
-				objectRefs.add(new ObjectRef(objectRef.getInt("timeline"), objectRef.getInt("key"), parent));
+				int timeline = xmlObjectRef.getInt("timeline");
 
-				int zIndex = objectRef.getInt("z_index", 0);
+				objectRefs.add(new ObjectRef(timeline, xmlObjectRef.getInt("key"), parent));
+
+				zIndexTempMap.put(timeline, xmlObjectRef.getInt("z_index", 0));
 			}
 
 
@@ -198,7 +209,11 @@ public class SCMLReader
 			if(timelineKeys.size == 0 || timelineKeys.get(0).getObject() instanceof SpriterBone)
 				timelines.add(new Timeline(xmlElement.get("name"), timelineKeys));
 			else
-				timelines.add(new SpriteTimeline(xmlElement.get("name"), timelineKeys, 0));
+			{
+				int timelineId = xmlElement.getInt("id", -1);
+
+				timelines.add(new SpriteTimeline(xmlElement.get("name"), timelineKeys, zIndexTempMap.get(timelineId)));
+			}
 
 		}
 	}
