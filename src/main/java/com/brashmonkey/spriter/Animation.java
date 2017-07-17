@@ -1,12 +1,8 @@
 package com.brashmonkey.spriter;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.utils.Array;
 import com.brashmonkey.spriter.math.Curve;
-
-import static java.lang.Float.isInfinite;
-import static java.lang.Float.isNaN;
 
 /**
  * Represents an animation of a Spriter SCML file. An animation holds {@link Timeline}s and a {@link Mainline} to
@@ -18,22 +14,24 @@ import static java.lang.Float.isNaN;
 public class Animation
 {
 	private String name;
+	private int length;
+	private boolean looping;
 
 	private Mainline mainline;
 	private final Array<Timeline> timelines;
-	private int length;
 
-	private boolean looping;
-	private MainlineKey currentKey;
-	private TimelineKey[] tweenedKeys, unmappedTweenedKeys;
-	private boolean prepared;
+	private Array<SpriterObject> tweenedObjects; //sprites made on runtime by tweening original sprites from animation
+	private Array<SpriterDrawable> sprites;
 
+	/**
+	 * Milliseconds
+	 */
 	private float time = 0;
 	private float speed = 1f, alpha = 1f;
 
 	private SpriterObject root = new SpriterObject();
 
-	public Animation(Mainline mainline, String name, int length, boolean looping, int timelines)
+	public Animation(String name, int length, boolean looping, Mainline mainline, Array<Timeline> timelines)
 	{
 		this.name = name;
 
@@ -41,8 +39,9 @@ public class Animation
 		this.looping = looping;
 
 		this.mainline = mainline;
-		this.timelines = new Array<>(timelines);
-		this.prepared = false;
+		this.timelines = timelines;
+
+		prepare();
 	}
 
 	public Animation(Animation animation)
@@ -56,41 +55,42 @@ public class Animation
 		this.timelines = new Array<>(animation.getTimelines().size);
 
 		for(Timeline timeline : animation.getTimelines())
-			timelines.add(new Timeline(timeline));
+			timelines.add(timeline.clone());
 
 		prepare();
 	}
 
 	public void prepare()
 	{
-		tweenedKeys = new TimelineKey[timelines.size];
-		unmappedTweenedKeys = new TimelineKey[timelines.size];
+		tweenedObjects = new Array<>(new SpriterObject[timelines.size]);
+		sprites = new Array<>(timelines.size);
 
-		for(int i = 0; i < timelines.size; i++)
+		for(Timeline timeline : timelines)
 		{
-			tweenedKeys[i] = new TimelineKey();
-			unmappedTweenedKeys[i] = new TimelineKey();
-			tweenedKeys[i].setObject(new SpriterSprite());
-			unmappedTweenedKeys[i].setObject(new SpriterSprite());
+			if(timeline instanceof SpriteTimeline)
+			{
+				SpriterSprite sprite = new SpriterSprite();
+				tweenedObjects.set(timeline.getId(), sprite);
+				sprites.add(new SpriterDrawable(sprite, ((SpriteTimeline)timeline).getZIndex()));
+			}
+			else
+				tweenedObjects.set(timeline.getId(), new SpriterObject());
 		}
 
-		if(mainline.getKeys().size > 0)
-			currentKey = mainline.getKeys().get(0);
-		prepared = true;
+		sprites.sort();
 	}
 
 	public void draw(Batch batch)
 	{
-		if(isDone())
-			return;
+		//if(isDone())
+		//	return;
 
 		float prevColor = batch.getPackedColor();
-		Color tmp = batch.getColor();
-		tmp.a = alpha;
-		batch.setColor(tmp);
+		batch.getColor().a = alpha;
+		batch.setColor(batch.getColor()); //update
 
-		for(ObjectRef objectRef : currentKey.objectRefs)
-			((SpriterSprite)unmappedTweenedKeys[objectRef.timeline].getObject()).draw(batch);
+		for(SpriterDrawable sprite : sprites)
+			sprite.draw(batch);
 
 		batch.setColor(prevColor);
 	}
@@ -101,132 +101,99 @@ public class Animation
 	 */
 	public void update()
 	{
-		this.update(1 / 60f); //assume 60 fps by default
+		update(1000f / 60f); //assume 60 fps by default
 	}
 
 	/**
 	 * Updates this player. This means the current time gets increased by {@link #speed} and is applied to the current
 	 * animation.
+	 *
+	 * @param delta time in milliseconds
 	 */
 	public void update(float delta)
 	{
-		if(!prepared)
+		if(tweenedObjects == null)
 			throw new IllegalStateException("Animation not prepared");
 
-		time = time + speed * delta;
+		time += speed * delta;
 
 		if(time >= length)
 		{
 			if(!looping)
-			{
 				time = length;
-				return;
-			}
-
-			time = time - length;
+			else
+				time -= length;
 		}
-
-		if(time < 0)
-			time += length;
 
 		int intTime = (int)time;
 
-		currentKey = mainline.getKeyBeforeTime(intTime);
-
-		for(TimelineKey timelineKey : unmappedTweenedKeys)
-			timelineKey.setActive(false);
-
-		for(BoneRef ref : currentKey.boneRefs)
-			update(ref, intTime);
+		MainlineKey currentKey = mainline.getKeyBeforeTime(intTime, looping);
 
 		for(ObjectRef ref : currentKey.objectRefs)
-			update(ref, intTime);
+			update(currentKey, ref, intTime);
 	}
 
-	protected void update(BoneRef ref, int time)
+	protected void update(MainlineKey currentKey, ObjectRef ref, int time)
 	{
 		//Get the timelines, the refs pointing to
 		Timeline timeline = timelines.get(ref.timeline);
-		TimelineKey key = timeline.getKeys().get(ref.key);
-		TimelineKey nextKey = timeline.getKeys().get((ref.key + 1) % timeline.getKeys().size);
 
-		int nextTime = nextKey.getTime();
+		TimelineKey key = timeline.getKeys().get(ref.key); //get the last previous key
+		TimelineKey nextKey;
 
-		if(nextTime < key.getTime())
+		int timeOfNext;
+
+		if(ref.key + 1 == timeline.getKeys().size)
 		{
 			if(!looping)
-				nextKey = key;
-			else
-				nextTime = length;
-		}
+			{
+				//no need to tween, stay freezed at first sprite
+				SpriterObject tweenTarget = tweenedObjects.get(ref.timeline);
 
-		//Normalize the time
-		float norTime = (float)(time - key.getTime()) / (float)(nextTime - key.getTime());
+				tweenTarget.set(key.getObject());
 
-		if(isNaN(norTime) || isInfinite(norTime))
-			norTime = 1f;
+				SpriterObject parent = ref.parent != null ? tweenedObjects.get(ref.parent.timeline) : root;
+				tweenTarget.unmap(parent);
+				return;
+			}
 
-		if(currentKey.time > key.getTime())
-		{
-			float tMid = (float)(currentKey.time - key.getTime()) / (float)(nextTime - key.getTime());
-
-			if(isNaN(tMid) || isInfinite(tMid))
-				tMid = 0f;
-
-			norTime = (float)(time - currentKey.time) / (float)(nextTime - currentKey.time);
-
-			if(isNaN(norTime) || isInfinite(norTime))
-				norTime = 1f;
-
-			norTime = currentKey.curve.tween(tMid, 1f, norTime);
+			nextKey = timeline.getKeys().get(0);
+			timeOfNext = nextKey.getTime() + length; //wrap around
 		}
 		else
-			norTime = currentKey.curve.tween(0f, 1f, norTime);
+		{
+			nextKey = timeline.getKeys().get(ref.key + 1);
+			timeOfNext = nextKey.getTime();
+		}
+
+		float timeDiff = timeOfNext - key.getTime();
+		float timeRatio = currentKey.curve.interpolate(0f, 1f, (time - key.getTime()) / timeDiff);
 
 		//Tween object
-		SpriterObject bone1 = key.getObject();
-		SpriterObject bone2 = nextKey.getObject();
-		SpriterObject tweenTarget = this.tweenedKeys[ref.timeline].getObject();
+		SpriterObject obj1 = key.getObject();
+		SpriterObject obj2 = nextKey.getObject();
+		SpriterObject tweened = tweenedObjects.get(ref.timeline);
 
-		if(ref instanceof ObjectRef)
-			tweenObject((SpriterSprite)bone1, (SpriterSprite)bone2, (SpriterSprite)tweenTarget, norTime, key.getCurve(), key.getSpin());
-		else
-			tweenBone(bone1, bone2, tweenTarget, norTime, key.getCurve(), key.getSpin());
+		Curve curve = key.getCurve();
 
-		unmappedTweenedKeys[ref.timeline].setActive(true);
-		unmapTimelineObject(ref.timeline, ref.parent != null ? unmappedTweenedKeys[ref.parent.timeline].getObject() : root);
-	}
+		tweened.setAngle(curve.interpolateAngle(obj1.getAngle(), obj2.getAngle(), timeRatio, key.getSpin()));
 
-	private void unmapTimelineObject(int timeline, SpriterObject root)
-	{
-		SpriterObject tweenTarget = this.tweenedKeys[timeline].getObject();
-		SpriterObject mapTarget = this.unmappedTweenedKeys[timeline].getObject();
+		curve.interpolateVector(obj1.getPosition(), obj2.getPosition(), timeRatio, tweened.getPosition());
+		curve.interpolateVector(obj1.getScale(), obj2.getScale(), timeRatio, tweened.getScale());
+		curve.interpolateVector(obj1.getPivot(), obj2.getPivot(), timeRatio, tweened.getPivot());
 
-		mapTarget.set(tweenTarget);
+		if(timeline instanceof SpriteTimeline)
+		{
+			((SpriterSprite)tweened).setAlpha(curve.interpolate(((SpriterSprite)obj1).getAlpha(), ((SpriterSprite)obj2).getAlpha(), timeRatio));
+			((SpriterSprite)tweened).setAsset(((SpriterSprite)obj1).getAsset());
+		}
 
-		mapTarget.unmap(root);
-	}
-
-	private void tweenBone(SpriterObject bone1, SpriterObject bone2, SpriterObject target, float t, Curve curve, int spin)
-	{
-		target.angle = curve.tweenAngle(bone1.angle, bone2.angle, t, spin);
-		curve.tweenPoint(bone1.position, bone2.position, t, target.position);
-		curve.tweenPoint(bone1.scale, bone2.scale, t, target.scale);
-		curve.tweenPoint(bone1.pivot, bone2.pivot, t, target.pivot);
-	}
-
-	private void tweenObject(SpriterSprite object1, SpriterSprite object2, SpriterSprite target, float t, Curve curve, int spin)
-	{
-		this.tweenBone(object1, object2, target, t, curve, spin);
-
-		target.setAlpha(curve.tweenAngle(object1.getAlpha(), object2.getAlpha(), t));
-		target.setAsset(object1.getAsset());
+		tweened.unmap(ref.parent != null ? tweenedObjects.get(ref.parent.timeline) : root);
 	}
 
 	public void reset()
 	{
-		this.time = 0;
-		prepare();
+		time = 0;
 		update(0);
 	}
 
@@ -255,6 +222,11 @@ public class Animation
 		this.name = name;
 	}
 
+	/**
+	 * Time is in milliseconds
+	 *
+	 * @return current time of this animation
+	 */
 	public float getTime()
 	{
 		return time;
@@ -262,6 +234,17 @@ public class Animation
 
 	public void setTime(float time)
 	{
+		while(time < 0)
+			time += length;
+
+		while(time > length)
+		{
+			if(looping)
+				time -= length;
+			else
+				time = length;
+		}
+
 		this.time = time;
 	}
 

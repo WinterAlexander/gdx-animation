@@ -13,7 +13,6 @@ public class TimelineKey
 	private int time;
 	private int spin;
 	private Curve curve;
-	private boolean active;
 	private SpriterObject object;
 
 	public TimelineKey(int time, int spin, Curve curve)
@@ -28,13 +27,7 @@ public class TimelineKey
 		this.time = key.time;
 		this.spin = key.spin;
 		this.curve = key.curve;
-		this.active = key.active;
 		this.object = key.object.clone();
-	}
-
-	public TimelineKey()
-	{
-		this(0, 1, new Curve());
 	}
 
 	public int getSpin()
@@ -65,16 +58,6 @@ public class TimelineKey
 	public void setCurve(Curve curve)
 	{
 		this.curve = curve;
-	}
-
-	public boolean isActive()
-	{
-		return active;
-	}
-
-	public void setActive(boolean active)
-	{
-		this.active = active;
 	}
 
 	public void setObject(SpriterObject object)

@@ -2,52 +2,42 @@ package com.brashmonkey.spriter;
 
 import com.badlogic.gdx.utils.IdentityMap;
 
-import java.util.Map;
-
 /**
- * Represents an object reference in a Spriter SCML file. An object reference extends a {@link BoneRef} with a {@link
- * #zIndex}, which indicates when the object has to be drawn.
+ * Represents a bone reference in a Spriter SCML file. A bone reference holds a {@link #timeline} and a
+ * {@link #key}. A bone reference may have a parent reference.
  *
  * @author Trixt0r
  */
-public class ObjectRef extends BoneRef implements Comparable<ObjectRef>
+public class ObjectRef
 {
-	private int zIndex;
+	public final int key, timeline;
+	public final ObjectRef parent;
 
-	public ObjectRef(int timeline, int key, BoneRef parent, int zIndex)
+	public ObjectRef(int timeline, int key, ObjectRef parent)
 	{
-		super(timeline, key, parent);
-		this.zIndex = zIndex;
+		this.timeline = timeline;
+		this.key = key;
+		this.parent = parent;
 	}
 
-	public ObjectRef(ObjectRef other, IdentityMap<BoneRef, BoneRef> graphIsomorphism)
+	public ObjectRef(ObjectRef other, IdentityMap<ObjectRef, ObjectRef> graphIsomorphism)
 	{
-		super(other, graphIsomorphism);
-		this.zIndex = other.zIndex;
+		this.key = other.key;
+		this.timeline = other.timeline;
+
+		if(other.parent != null)
+			this.parent = other.parent.clone(graphIsomorphism);
+		else
+			this.parent = null;
 	}
 
-	public int compareTo(ObjectRef o)
-	{
-		return Integer.compare(zIndex, o.zIndex);
-	}
-
-	public ObjectRef clone(IdentityMap<BoneRef, BoneRef> graphIsomorphism)
+	public ObjectRef clone(IdentityMap<ObjectRef, ObjectRef> graphIsomorphism)
 	{
 		if(graphIsomorphism.containsKey(this))
-			return (ObjectRef)graphIsomorphism.get(this);
+			return graphIsomorphism.get(this);
 
 		ObjectRef ref = new ObjectRef(this, graphIsomorphism);
 		graphIsomorphism.put(this, ref);
 		return ref;
-	}
-
-	public int getZIndex()
-	{
-		return zIndex;
-	}
-
-	public void setZIndex(int zIndex)
-	{
-		this.zIndex = zIndex;
 	}
 }

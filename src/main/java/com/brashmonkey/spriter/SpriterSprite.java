@@ -1,8 +1,5 @@
 package com.brashmonkey.spriter;
 
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 
 /**
@@ -35,22 +32,6 @@ public class SpriterSprite extends SpriterObject
 		this.asset = asset;
 	}
 
-	public void draw(Batch batch)
-	{
-		if(asset == null || asset.getTexture() == null)
-			return;
-
-		float width = asset.getRegionWidth();
-		float height = asset.getRegionHeight();
-
-		float originX = width * pivot.x;
-		float originY = height * pivot.y;
-
-		batch.setColor(batch.getColor().r, batch.getColor().g, batch.getColor().b, alpha);
-		batch.draw(asset, position.x - originX, position.y - originY, originX, originY, width, height, scale.x, scale.y, angle);
-		batch.setColor(batch.getColor().r, batch.getColor().g, batch.getColor().b, 1f);
-	}
-
 	/**
 	 * Sets the values of this object to the values of the given object.
 	 *
@@ -67,6 +48,7 @@ public class SpriterSprite extends SpriterObject
 			this.asset = ((SpriterSprite)object).asset;
 		}
 	}
+
 
 	public SpriterAsset getAsset()
 	{

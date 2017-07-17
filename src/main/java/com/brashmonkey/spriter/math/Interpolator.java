@@ -1,7 +1,10 @@
 package com.brashmonkey.spriter.math;
 
 
+import com.badlogic.gdx.math.MathUtils;
+
 import static com.badlogic.gdx.math.MathUtils.cos;
+import static java.lang.Math.abs;
 import static java.lang.Math.pow;
 
 /**
@@ -84,12 +87,14 @@ public class Interpolator
 	{
 		if(a == 0)
 			return solveQuadratic(b, c, d);
+
 		if(d == 0)
 			return 0f;
 
 		b /= a;
 		c /= a;
 		d /= a;
+
 		float squaredB = b * b;
 		float q = (3f * c - squaredB) / 9f;
 		float r = (-27f * d + b * (9f * c - 2f * squaredB)) / 54f;
@@ -99,12 +104,9 @@ public class Interpolator
 		if(disc > 0)
 		{
 			float sqrtDisc = (float)Math.sqrt(disc);
-			float s = r + sqrtDisc;
-			float f1 = -s;
-			s = (s < 0) ? -(float)pow(f1, 1f / 3f) : (float)pow(s, 1f / 3f);
-			float t = r - sqrtDisc;
-			float f = -t;
-			t = (t < 0) ? -(float)pow(f, 1f / 3f) : (float)pow(t, 1f / 3f);
+
+			float s = (float)pow(abs(r + sqrtDisc), 1f / 3f);
+			float t = (float)pow(abs(r - sqrtDisc), 1f / 3f);
 
 			float result = -term1 + s + t;
 			if(result >= 0 && result <= 1)
@@ -112,10 +114,10 @@ public class Interpolator
 		}
 		else if(disc == 0)
 		{
-			float f = -r;
-			float r13 = (r < 0) ? -(float)pow(f, 1f / 3f) : (float)pow(r, 1f / 3f);
+			float r13 = (float)pow(abs(r), 1f / 3f);
 
 			float result = -term1 + 2f * r13;
+
 			if(result >= 0 && result <= 1)
 				return result;
 
@@ -125,24 +127,30 @@ public class Interpolator
 		}
 		else
 		{
-			q = -q;
-			float dum1 = q * q * q;
-			dum1 = (float)Math.acos(r / (float)Math.sqrt(dum1));
-			float r13 = 2f * (float)Math.sqrt(q);
+			q *= -1;
+
+			float qSqrt = (float)Math.sqrt(q);
+
+			float dum1 = (float)Math.acos(r / qSqrt * qSqrt * qSqrt);
+
+			float r13 = 2f * qSqrt;
 
 			float result = -term1 + r13 * cos(dum1 / 3f);
+
 			if(result >= 0 && result <= 1)
 				return result;
 
-			result = -term1 + r13 * cos((dum1 + 2f * (float)Math.PI) / 3f);
+			result = -term1 + r13 * cos((dum1 + MathUtils.PI2) / 3f);
 			if(result >= 0 && result <= 1)
 				return result;
 
-			result = -term1 + r13 * cos((dum1 + 4f * (float)Math.PI) / 3f);
+			result = -term1 + r13 * cos((dum1 + 4f * MathUtils.PI) / 3f);
 			if(result >= 0 && result <= 1)
 				return result;
 		}
 
+		//DEBUG
+		System.out.println("WARNING: No cubic solution found for " + a + ", " + b + ", " + c + ", " + d);
 		return -1;
 	}
 
@@ -159,8 +167,10 @@ public class Interpolator
 		float squaredB = b * b;
 		float twoA = 2 * a;
 		float fourAC = 4 * a * c;
+
 		float sqrt = (float)Math.sqrt(squaredB - fourAC);
 		float result = (-b + sqrt) / twoA;
+
 		if(result >= 0 && result <= 1)
 			return result;
 

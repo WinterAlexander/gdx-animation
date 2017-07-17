@@ -3,7 +3,7 @@ package com.brashmonkey.spriter;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 /**
- * A TextureRegion with a pivot
+ * A TextureRegion with a pivot and a zIndex
  *
  * @author Winter
  */

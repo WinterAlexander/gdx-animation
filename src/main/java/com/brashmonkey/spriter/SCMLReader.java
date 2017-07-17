@@ -3,6 +3,8 @@ package com.brashmonkey.spriter;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.IntMap;
+import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.XmlReader;
 import com.badlogic.gdx.utils.XmlReader.Element;
 import com.brashmonkey.spriter.math.Curve;
@@ -23,6 +25,11 @@ public class SCMLReader
 {
 	private TextureAtlas atlas;
 	private SCMLProject currentProject;
+
+	/**
+	 * Since zIndex are for timeline but stored in a different section of the xml, they need to be temporarily mapped while loading
+	 */
+	private ObjectMap<Integer, Integer> zIndexTempMap = new ObjectMap<>();
 
 	/**
 	 * Creates a new SCML reader
@@ -114,9 +121,10 @@ public class SCMLReader
 		for(Element xmlElement : entities)
 		{
 			SpriterEntity entity = new SpriterEntity(xmlElement.get("name"));
-			currentProject.getSourceEntities().add(entity);
 
 			loadAnimations(xmlElement.getChildrenByName("animation"), entity);
+
+			currentProject.getSourceEntities().add(entity);
 		}
 	}
 
@@ -130,101 +138,102 @@ public class SCMLReader
 	{
 		for(Element xmlElement : animations)
 		{
-			Array<Element> timelines = xmlElement.getChildrenByName("timeline");
-			Element mainline = xmlElement.getChildByName("mainline");
+			Array<Element> xmlTimelines = xmlElement.getChildrenByName("timeline");
+			Element xmlMainline = xmlElement.getChildByName("mainline");
 
-			Array<Element> mainlineKeys = mainline.getChildrenByName("key");
-			Animation animation = new Animation(
-					new Mainline(mainlineKeys.size),
-					xmlElement.get("name"),
-					xmlElement.getInt("length"),
+			Array<Element> mainlineKeys = xmlMainline.getChildrenByName("key");
+
+			Mainline mainline = new Mainline(mainlineKeys.size);
+			Array<Timeline> timelines = new Array<>(xmlTimelines.size);
+
+			loadTimelines(mainlineKeys, xmlTimelines, mainline, timelines);
+
+			//in spriter, you can place a key both at 0 and at the length for a total possible keys of length + 1,
+			//to handle this, we assume the actual length is +1 the one displayed in spriter
+			Animation animation = new Animation(xmlElement.get("name"),
+					xmlElement.getInt("length") + 1,
 					xmlElement.getBoolean("looping", true),
-					timelines.size);
+					mainline,
+					timelines);
 
 			entity.getAnimations().add(animation);
-			loadMainlineKeys(mainlineKeys, animation.getMainline());
-			loadTimelines(timelines, animation);
-			animation.prepare();
 		}
 	}
 
 	/**
-	 * Iterates through the given mainline keys and adds them to the given {@link Mainline} object.
+	 * Loads all the timelines of the animation and the mainline
+	 * mainline contains information about the graph and zIndexes
 	 *
-	 * @param keys a list of mainline keys
-	 * @param main the mainline
+	 * @param xmlMainlineKeys a list of mainline keys
+	 * @param mainline the mainline
 	 */
-	private void loadMainlineKeys(Array<Element> keys, Mainline main)
+	private void loadTimelines(Array<Element> xmlMainlineKeys, Array<Element> xmlTimelines, Mainline mainline, Array<Timeline> timelines)
 	{
-		for(Element xmlElement : keys)
+		zIndexTempMap.clear();
+
+		for(Element xmlElement : xmlMainlineKeys)
 		{
-			Array<Element> objectRefs = xmlElement.getChildrenByName("object_ref");
-			Array<Element> boneRefs = xmlElement.getChildrenByName("bone_ref");
+			Array<Element> xmlObjectRefs = xmlElement.getChildrenByName("object_ref");
+			Array<Element> xmlBoneRefs = xmlElement.getChildrenByName("bone_ref");
 
 			Curve curve = new Curve(CurveType.valueOf(xmlElement.get("curve_type", "linear").toUpperCase()));
 			curve.constraints.set(xmlElement.getFloat("c1", 0f), xmlElement.getFloat("c2", 0f), xmlElement.getFloat("c3", 0f), xmlElement.getFloat("c4", 0f));
 
-			MainlineKey key = new MainlineKey(xmlElement.getInt("time", 0), curve, boneRefs.size, objectRefs.size);
-			main.getKeys().add(key);
-			loadRefs(objectRefs, boneRefs, key);
+			Array<ObjectRef> objectRefs = new Array<>(xmlBoneRefs.size + xmlObjectRefs.size);
+
+			for(Element xmlBoneRef : xmlBoneRefs)
+			{
+				int parentId = xmlBoneRef.getInt("parent", -1);
+				ObjectRef parent = parentId != -1 ? objectRefs.get(parentId) : null;
+
+				objectRefs.add(new ObjectRef(xmlBoneRef.getInt("timeline"), xmlBoneRef.getInt("key"), parent));
+			}
+
+			for(Element xmlObjectRef : xmlObjectRefs)
+			{
+				int parentId = xmlObjectRef.getInt("parent", -1);
+				ObjectRef parent = parentId != -1 ? objectRefs.get(parentId) : null;
+
+				int timeline = xmlObjectRef.getInt("timeline");
+
+				objectRefs.add(new ObjectRef(timeline, xmlObjectRef.getInt("key"), parent));
+
+				zIndexTempMap.put(timeline, xmlObjectRef.getInt("z_index", 0));
+			}
+
+
+			mainline.getKeys().add(new MainlineKey(xmlElement.getInt("time", 0), curve, objectRefs));
 		}
-	}
 
-	/**
-	 * Iterates through the given bone and object references and adds them to the given {@link MainlineKey} object.
-	 *
-	 * @param objectRefs a list of object references
-	 * @param boneRefs a list if bone references
-	 * @param key the mainline key
-	 */
-	private void loadRefs(Array<Element> objectRefs, Array<Element> boneRefs, MainlineKey key)
-	{
-		for(Element xmlElement : boneRefs)
-			key.boneRefs.add(
-					new BoneRef(
-							xmlElement.getInt("timeline"),
-							xmlElement.getInt("key"),
-							key.getBoneRef(xmlElement.getInt("parent", -1))));
-
-
-		for(Element xmlElement : objectRefs)
-			key.objectRefs.add(
-					new ObjectRef(
-							xmlElement.getInt("timeline"),
-							xmlElement.getInt("key"),
-							key.getBoneRef(xmlElement.getInt("parent", -1)),
-							xmlElement.getInt("z_index", 0)));
-
-		key.objectRefs.sort();
-	}
-
-	/**
-	 * Iterates through the given timelines and adds them to the given {@link Animation} object.
-	 *
-	 * @param timelines a list of timelines
-	 * @param animation the animation containing the timelines
-	 */
-	private void loadTimelines(Array<Element> timelines, Animation animation)
-	{
-		for(Element xmlElement : timelines)
+		for(Element xmlElement : xmlTimelines)
 		{
-			Array<Element> keys = xmlElement.getChildrenByName("key");
+			Array<TimelineKey> timelineKeys = loadTimelineKeys(xmlElement.getChildrenByName("key"));
 
-			Timeline timeline = new Timeline(xmlElement.get("name"), keys.size);
+			int id = xmlElement.getInt("id");
+			String name = xmlElement.get("name");
 
-			loadTimelineKeys(keys, timeline);
-			animation.getTimelines().add(timeline);
+			if(timelineKeys.size == 0 || timelineKeys.get(0).getObject() instanceof SpriterBone)
+				timelines.add(new Timeline(id, name, timelineKeys));
+			else
+			{
+				int timelineId = xmlElement.getInt("id", -1);
+
+				timelines.add(new SpriteTimeline(id, name, timelineKeys, zIndexTempMap.get(timelineId)));
+			}
+
 		}
 	}
-
 	/**
-	 * Iterates through the given timeline keys and adds them to the given {@link Timeline} object.
+	 * Iterates through the given timeline keys
 	 *
-	 * @param keys a list if timeline keys
-	 * @param timeline the timeline containing the keys
+	 * @param keys a list if timeline keys as xml
+	 *
+	 * @return array of timeline keys
 	 */
-	private void loadTimelineKeys(Array<Element> keys, Timeline timeline)
+	private Array<TimelineKey> loadTimelineKeys(Array<Element> keys)
 	{
+		Array<TimelineKey> timelineKeys = new Array<>(keys.size);
+
 		for(Element xmlKey : keys)
 		{
 			Curve curve = new Curve(CurveType.valueOf(xmlKey.get("curve_type", "linear").toUpperCase()));
@@ -252,8 +261,10 @@ public class SCMLReader
 				key.setObject(new SpriterBone(position, scale, new Vector2(obj.getFloat("pivot_x", 0f), obj.getFloat("pivot_y", 0.5f)), angle));
 
 
-			timeline.getKeys().add(key);
+			timelineKeys.add(key);
 		}
+
+		return timelineKeys;
 	}
 
 	public TextureAtlas getAtlas()

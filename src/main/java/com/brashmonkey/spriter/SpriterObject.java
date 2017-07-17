@@ -13,7 +13,7 @@ import static java.lang.Math.signum;
 public class SpriterObject
 {
 	public final Vector2 position, scale, pivot;
-	public float angle;
+	private float angle;
 
 	/**
 	 * Constructor for root
@@ -114,4 +114,28 @@ public class SpriterObject
 		this.scale.y = scale;
 	}
 
+	public Vector2 getPosition()
+	{
+		return position;
+	}
+
+	public Vector2 getScale()
+	{
+		return scale;
+	}
+
+	public Vector2 getPivot()
+	{
+		return pivot;
+	}
+
+	public float getAngle()
+	{
+		return angle;
+	}
+
+	public void setAngle(float angle)
+	{
+		this.angle = angle;
+	}
 }
