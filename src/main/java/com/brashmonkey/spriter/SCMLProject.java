@@ -37,21 +37,21 @@ public class SCMLProject
 
 	public void putAsset(int folderID, int fileID, SpriterAsset asset)
 	{
-		assets.put(key(folderID, fileID), asset);
+		assets.put(getAssetKey(folderID, fileID), asset);
 	}
 
 	public SpriterAsset getAsset(int folderID, int fileID)
 	{
-		return assets.get(key(folderID, fileID));
-	}
-
-	private int key(int folder, int file)
-	{
-		return (folder << 16) + file;
+		return assets.get(getAssetKey(folderID, fileID));
 	}
 
 	public Array<SpriterEntity> getSourceEntities()
 	{
 		return entities;
+	}
+
+	public static int getAssetKey(int folder, int file)
+	{
+		return (folder << 16) + file;
 	}
 }

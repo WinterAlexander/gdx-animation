@@ -10,18 +10,21 @@ import com.badlogic.gdx.utils.Array;
  */
 public class Timeline
 {
+	private int id;
 	private String name;
 
 	private final Array<TimelineKey> keys;
 
-	public Timeline(String name, Array<TimelineKey> timelineKeys)
+	public Timeline(int id, String name, Array<TimelineKey> timelineKeys)
 	{
+		this.id = id;
 		this.name = name;
 		this.keys = timelineKeys;
 	}
 
 	public Timeline(Timeline timeline)
 	{
+		this.id = timeline.id;
 		this.name = timeline.name;
 		this.keys = new Array<>(timeline.getKeys().size);
 
@@ -30,9 +33,19 @@ public class Timeline
 	}
 
 	@Override
-	protected Timeline clone()
+	public Timeline clone()
 	{
 		return new Timeline(this);
+	}
+
+	public int getId()
+	{
+		return id;
+	}
+
+	public void setId(int id)
+	{
+		this.id = id;
 	}
 
 	public String getName()

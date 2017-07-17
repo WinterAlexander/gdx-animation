@@ -11,9 +11,9 @@ public class SpriteTimeline extends Timeline
 {
 	private int zIndex;
 
-	public SpriteTimeline(String name, Array<TimelineKey> timelineKeys, int zIndex)
+	public SpriteTimeline(int id, String name, Array<TimelineKey> timelineKeys, int zIndex)
 	{
-		super(name, timelineKeys);
+		super(id, name, timelineKeys);
 		this.zIndex = zIndex;
 	}
 
@@ -24,7 +24,7 @@ public class SpriteTimeline extends Timeline
 	}
 
 	@Override
-	protected SpriteTimeline clone()
+	public SpriteTimeline clone()
 	{
 		return new SpriteTimeline(this);
 	}

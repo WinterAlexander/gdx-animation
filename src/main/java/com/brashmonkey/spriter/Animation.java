@@ -20,7 +20,8 @@ public class Animation
 	private Mainline mainline;
 	private final Array<Timeline> timelines;
 
-	private SpriterObject[] tweenedObjects; //sprites made on runtime by tweening original sprites from animation
+	private Array<SpriterObject> tweenedObjects; //sprites made on runtime by tweening original sprites from animation
+	private Array<SpriterDrawable> sprites;
 
 	/**
 	 * Milliseconds
@@ -61,15 +62,22 @@ public class Animation
 
 	public void prepare()
 	{
-		tweenedObjects = new SpriterObject[timelines.size];
+		tweenedObjects = new Array<>(new SpriterObject[timelines.size]);
+		sprites = new Array<>(timelines.size);
 
-		for(int i = 0; i < timelines.size; i++)
+		for(Timeline timeline : timelines)
 		{
-			if(timelines.get(i) instanceof SpriteTimeline)
-				tweenedObjects[i] = new SpriterSprite();
+			if(timeline instanceof SpriteTimeline)
+			{
+				SpriterSprite sprite = new SpriterSprite();
+				tweenedObjects.set(timeline.getId(), sprite);
+				sprites.add(new SpriterDrawable(sprite, ((SpriteTimeline)timeline).getZIndex()));
+			}
 			else
-				tweenedObjects[i] = new SpriterObject();
+				tweenedObjects.set(timeline.getId(), new SpriterObject());
 		}
+
+		sprites.sort();
 	}
 
 	public void draw(Batch batch)
@@ -81,9 +89,8 @@ public class Animation
 		batch.getColor().a = alpha;
 		batch.setColor(batch.getColor()); //update
 
-		for(SpriterObject object : tweenedObjects)
-			if(object instanceof SpriterSprite)
-				((SpriterSprite)object).draw(batch);
+		for(SpriterDrawable sprite : sprites)
+			sprite.draw(batch);
 
 		batch.setColor(prevColor);
 	}
@@ -94,7 +101,7 @@ public class Animation
 	 */
 	public void update()
 	{
-		this.update(1000f / 60f); //assume 60 fps by default
+		update(1000f / 60f); //assume 60 fps by default
 	}
 
 	/**
@@ -141,11 +148,11 @@ public class Animation
 			if(!looping)
 			{
 				//no need to tween, stay freezed at first sprite
-				SpriterObject tweenTarget = tweenedObjects[ref.timeline];
+				SpriterObject tweenTarget = tweenedObjects.get(ref.timeline);
 
 				tweenTarget.set(key.getObject());
 
-				SpriterObject parent = ref.parent != null ? tweenedObjects[ref.parent.timeline] : root;
+				SpriterObject parent = ref.parent != null ? tweenedObjects.get(ref.parent.timeline) : root;
 				tweenTarget.unmap(parent);
 				return;
 			}
@@ -165,14 +172,15 @@ public class Animation
 		//Tween object
 		SpriterObject obj1 = key.getObject();
 		SpriterObject obj2 = nextKey.getObject();
-		SpriterObject tweened = tweenedObjects[ref.timeline];
+		SpriterObject tweened = tweenedObjects.get(ref.timeline);
 
 		Curve curve = key.getCurve();
 
-		tweened.angle = curve.interpolateAngle(obj1.angle, obj2.angle, timeRatio, key.getSpin());
-		curve.interpolateVector(obj1.position, obj2.position, timeRatio, tweened.position);
-		curve.interpolateVector(obj1.scale, obj2.scale, timeRatio, tweened.scale);
-		curve.interpolateVector(obj1.pivot, obj2.pivot, timeRatio, tweened.pivot);
+		tweened.setAngle(curve.interpolateAngle(obj1.getAngle(), obj2.getAngle(), timeRatio, key.getSpin()));
+
+		curve.interpolateVector(obj1.getPosition(), obj2.getPosition(), timeRatio, tweened.getPosition());
+		curve.interpolateVector(obj1.getScale(), obj2.getScale(), timeRatio, tweened.getScale());
+		curve.interpolateVector(obj1.getPivot(), obj2.getPivot(), timeRatio, tweened.getPivot());
 
 		if(timeline instanceof SpriteTimeline)
 		{
@@ -180,7 +188,7 @@ public class Animation
 			((SpriterSprite)tweened).setAsset(((SpriterSprite)obj1).getAsset());
 		}
 
-		tweened.unmap(ref.parent != null ? tweenedObjects[ref.parent.timeline] : root);
+		tweened.unmap(ref.parent != null ? tweenedObjects.get(ref.parent.timeline) : root);
 	}
 
 	public void reset()

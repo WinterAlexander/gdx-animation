@@ -1,7 +1,6 @@
 package com.brashmonkey.spriter;
 
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.ObjectMap;
 
 /**
  * Represents an entity of a Spriter SCML file. An entity holds {@link Animation}s, a {@link #name}.
@@ -15,8 +14,13 @@ public class SpriterEntity
 
 	public SpriterEntity(String name)
 	{
+		this(name, new Array<>());
+	}
+
+	public SpriterEntity(String name, Array<Animation> animations)
+	{
 		this.name = name;
-		this.animations = new Array<>();
+		this.animations = animations;
 	}
 
 	public SpriterEntity(SpriterEntity entity)

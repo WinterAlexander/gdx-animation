@@ -3,6 +3,7 @@ package com.brashmonkey.spriter;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.IntMap;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.XmlReader;
 import com.badlogic.gdx.utils.XmlReader.Element;
@@ -208,13 +209,16 @@ public class SCMLReader
 		{
 			Array<TimelineKey> timelineKeys = loadTimelineKeys(xmlElement.getChildrenByName("key"));
 
+			int id = xmlElement.getInt("id");
+			String name = xmlElement.get("name");
+
 			if(timelineKeys.size == 0 || timelineKeys.get(0).getObject() instanceof SpriterBone)
-				timelines.add(new Timeline(xmlElement.get("name"), timelineKeys));
+				timelines.add(new Timeline(id, name, timelineKeys));
 			else
 			{
 				int timelineId = xmlElement.getInt("id", -1);
 
-				timelines.add(new SpriteTimeline(xmlElement.get("name"), timelineKeys, zIndexTempMap.get(timelineId)));
+				timelines.add(new SpriteTimeline(id, name, timelineKeys, zIndexTempMap.get(timelineId)));
 			}
 
 		}

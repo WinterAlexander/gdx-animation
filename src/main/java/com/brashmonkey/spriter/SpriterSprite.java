@@ -1,6 +1,5 @@
 package com.brashmonkey.spriter;
 
-import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector2;
 
 /**
@@ -31,27 +30,6 @@ public class SpriterSprite extends SpriterObject
 		super(position, scale, pivot, angle);
 		this.alpha = alpha;
 		this.asset = asset;
-	}
-
-	public void draw(Batch batch)
-	{
-		if(asset == null || asset.getTexture() == null)
-			return;
-
-		float width = asset.getRegionWidth();
-		float height = asset.getRegionHeight();
-
-		float originX = width * pivot.x;
-		float originY = height * pivot.y;
-
-		float prevColor = batch.getPackedColor();
-
-		batch.getColor().a *= alpha;
-		batch.setColor(batch.getColor());
-
-		batch.draw(asset, position.x - originX, position.y - originY, originX, originY, width, height, scale.x, scale.y, angle);
-
-		batch.setColor(prevColor);
 	}
 
 	/**
