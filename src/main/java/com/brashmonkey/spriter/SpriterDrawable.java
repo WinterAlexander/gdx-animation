@@ -72,7 +72,7 @@ public class SpriterDrawable implements Comparable<SpriterDrawable>
 		return zIndex;
 	}
 
-	public void setzIndex(int zIndex)
+	public void setZIndex(int zIndex)
 	{
 		this.zIndex = zIndex;
 	}

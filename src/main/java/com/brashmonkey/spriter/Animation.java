@@ -88,7 +88,7 @@ public class Animation
 
 		float prevColor = batch.getPackedColor();
 		Color tmp = batch.getColor();
-		tmp.a = alpha;
+		tmp.a *= alpha;
 		batch.setColor(tmp); //update
 
 		for(SpriterDrawable sprite : sprites)
