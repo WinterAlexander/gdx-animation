@@ -1,5 +1,6 @@
 package com.brashmonkey.spriter;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.utils.Array;
 import com.brashmonkey.spriter.math.Curve;
@@ -86,8 +87,9 @@ public class Animation
 		//	return;
 
 		float prevColor = batch.getPackedColor();
-		batch.getColor().a = alpha;
-		batch.setColor(batch.getColor()); //update
+		Color tmp = batch.getColor();
+		tmp.a = alpha;
+		batch.setColor(tmp); //update
 
 		for(SpriterDrawable sprite : sprites)
 			sprite.draw(batch);

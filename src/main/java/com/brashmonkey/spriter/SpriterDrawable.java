@@ -1,5 +1,6 @@
 package com.brashmonkey.spriter;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 
 /**
@@ -31,8 +32,9 @@ public class SpriterDrawable implements Comparable<SpriterDrawable>
 
 		float prevColor = batch.getPackedColor();
 
-		batch.getColor().a *= sprite.getAlpha();
-		batch.setColor(batch.getColor());
+		Color tmp = batch.getColor();
+		tmp.a *= sprite.getAlpha();
+		batch.setColor(tmp);
 
 		batch.draw(sprite.getAsset(),
 				sprite.getPosition().x - originX,
