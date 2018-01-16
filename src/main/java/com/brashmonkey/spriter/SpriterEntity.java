@@ -36,9 +36,9 @@ public class SpriterEntity
 	{
 		for(Animation animation : animations)
 			for(Timeline timeline : animation.getTimelines())
-				for(TimelineKey key : timeline.getKeys())
-					if(key.getObject() instanceof SpriterSprite)
-						if(((SpriterSprite)key.getObject()).getAsset().getName().equals(name))
+				if(timeline.getName().equals(name))
+					for(TimelineKey key : timeline.getKeys())
+						if(key.getObject() instanceof SpriterSprite)
 							((SpriterSprite)key.getObject()).setAsset(newAsset);
 	}
 
