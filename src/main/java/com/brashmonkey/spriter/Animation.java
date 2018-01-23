@@ -239,7 +239,7 @@ public class Animation
 		while(time < 0)
 			time += length;
 
-		while(time > length)
+		while(time >= length)
 		{
 			if(looping)
 				time -= length;
