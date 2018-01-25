@@ -42,6 +42,12 @@ public class SpriterEntity
 							((SpriterSprite)key.getObject()).setAsset(newAsset);
 	}
 
+	public void setAlpha(float alpha)
+	{
+		for(Animation animation : animations)
+			animation.setAlpha(alpha);
+	}
+
 	/**
 	 * Returns an Animation for the specified index
 	 *
