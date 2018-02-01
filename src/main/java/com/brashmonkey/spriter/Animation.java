@@ -239,13 +239,13 @@ public class Animation
 		while(time < 0)
 			time += length;
 
-		while(time >= length)
+		if(looping)
 		{
-			if(looping)
+			while(time >= length)
 				time -= length;
-			else
-				time = length;
 		}
+		else if(time > length)
+			time = length;
 
 		this.time = time;
 	}
