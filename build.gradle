@@ -12,7 +12,7 @@ repositories {
 }
 
 dependencies {
-    version = '1.9.5'
+    version = '1.9.8'
 
     if(project.hasProperty('gdxVersion'))
         version = "$gdxVersion"

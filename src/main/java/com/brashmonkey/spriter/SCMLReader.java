@@ -56,16 +56,8 @@ public class SCMLReader
 	 */
 	public SCMLProject load(InputStream stream)
 	{
-		try
-		{
-			XmlReader reader = new XmlReader();
-			return load(reader.parse(stream));
-		}
-		catch(IOException e)
-		{
-			e.printStackTrace();
-			return null;
-		}
+		XmlReader reader = new XmlReader();
+		return load(reader.parse(stream));
 	}
 
 	/**
