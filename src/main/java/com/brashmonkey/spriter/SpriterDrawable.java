@@ -6,7 +6,9 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 /**
  * Undocumented :(
  * <p>
- * Created by Alexander Winter on 2017-07-16.
+ * Created on 2017-07-16.
+ *
+ * @author Alexander Winter
  */
 public class SpriterDrawable implements Comparable<SpriterDrawable>
 {

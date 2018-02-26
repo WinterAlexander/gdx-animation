@@ -13,7 +13,9 @@ import com.brashmonkey.spriter.SCMLLoader.SCMLProjectParameters;
 /**
  * Undocumented :(
  * <p>
- * Created by Alexander Winter on 2017-01-16.
+ * Created on 2017-01-16.
+ *
+ * @author Alexander Winter
  */
 public class SCMLLoader extends SynchronousAssetLoader<SCMLProject, SCMLProjectParameters>
 {

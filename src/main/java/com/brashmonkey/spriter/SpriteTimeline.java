@@ -5,7 +5,9 @@ import com.badlogic.gdx.utils.Array;
 /**
  * Undocumented :(
  * <p>
- * Created by Alexander Winter on 2017-07-15.
+ * Created on 2017-07-15.
+ *
+ * @author Alexander Winter
  */
 public class SpriteTimeline extends Timeline
 {

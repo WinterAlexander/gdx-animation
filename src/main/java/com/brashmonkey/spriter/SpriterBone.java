@@ -5,7 +5,9 @@ import com.badlogic.gdx.math.Vector2;
 /**
  * Undocumented :(
  * <p>
- * Created by Alexander Winter on 2017-03-17.
+ * Created on 2017-03-17.
+ *
+ * @author Alexander Winter
  */
 public class SpriterBone extends SpriterObject
 {
