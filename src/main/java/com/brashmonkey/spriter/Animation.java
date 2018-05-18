@@ -24,6 +24,8 @@ public class Animation
 	private Array<SpriterObject> tweenedObjects; //sprites made on runtime by tweening original sprites from animation
 	private Array<SpriterDrawable> sprites;
 
+	private MainlineKey currentKey;
+
 	/**
 	 * Milliseconds
 	 */
@@ -79,17 +81,16 @@ public class Animation
 		}
 
 		sprites.sort();
+
+		currentKey = mainline.getKeyBeforeTime(0, looping);
 	}
 
 	public void draw(Batch batch)
 	{
-		//if(isDone())
-		//	return;
-
 		float prevColor = batch.getPackedColor();
 		Color tmp = batch.getColor();
 		tmp.a *= alpha;
-		batch.setColor(tmp); //update
+		batch.setColor(tmp);
 
 		for(SpriterDrawable sprite : sprites)
 			sprite.draw(batch);
@@ -116,6 +117,8 @@ public class Animation
 	{
 		if(tweenedObjects == null)
 			throw new IllegalStateException("Animation not prepared");
+
+		//if(time + speed * delta > currentKey.time)
 
 		time += speed * delta;
 
