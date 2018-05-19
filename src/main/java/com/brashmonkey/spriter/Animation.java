@@ -24,6 +24,8 @@ public class Animation
 	private Array<SpriterObject> tweenedObjects; //sprites made on runtime by tweening original sprites from animation
 	private Array<SpriterDrawable> sprites;
 
+	private MainlineKey currentKey;
+
 	/**
 	 * Milliseconds
 	 */
@@ -79,31 +81,21 @@ public class Animation
 		}
 
 		sprites.sort();
+
+		currentKey = mainline.getKeyBeforeTime(0, looping);
 	}
 
 	public void draw(Batch batch)
 	{
-		//if(isDone())
-		//	return;
-
 		float prevColor = batch.getPackedColor();
 		Color tmp = batch.getColor();
 		tmp.a *= alpha;
-		batch.setColor(tmp); //update
+		batch.setColor(tmp);
 
 		for(SpriterDrawable sprite : sprites)
 			sprite.draw(batch);
 
 		batch.setColor(prevColor);
-	}
-
-	/**
-	 * Updates this player. This means the current time gets increased by {@link #speed} and is applied to the current
-	 * animation.
-	 */
-	public void update()
-	{
-		update(1000f / 60f); //assume 60 fps by default
 	}
 
 	/**
@@ -117,32 +109,21 @@ public class Animation
 		if(tweenedObjects == null)
 			throw new IllegalStateException("Animation not prepared");
 
-		time += speed * delta;
+		setTime(time + speed * delta);
 
-		if(time >= length)
-		{
-			if(!looping)
-				time = length;
-			else
-				time -= length;
-		}
-
-		int intTime = (int)time;
-
-		MainlineKey currentKey = mainline.getKeyBeforeTime(intTime, looping);
+		MainlineKey currentKey = mainline.getKeyBeforeTime((int)time, looping);
 
 		for(ObjectRef ref : currentKey.objectRefs)
-			update(currentKey, ref, intTime);
+			update(currentKey, ref, (int)time);
 	}
 
 	protected void update(MainlineKey currentKey, ObjectRef ref, int time)
 	{
-		//Get the timelines, the refs pointing to
+		//Get the timelines, the ref's pointing to
 		Timeline timeline = timelines.get(ref.timeline);
-
 		TimelineKey key = timeline.getKeys().get(ref.key); //get the last previous key
-		TimelineKey nextKey;
 
+		TimelineKey nextKey;
 		int timeOfNext;
 
 		if(ref.key + 1 == timeline.getKeys().size)
@@ -197,6 +178,7 @@ public class Animation
 	{
 		time = 0;
 		update(0);
+		currentKey = mainline.getKeyBeforeTime(0, looping);
 	}
 
 	public SpriterObject getRoot()
@@ -236,14 +218,15 @@ public class Animation
 
 	public void setTime(float time)
 	{
-		while(time < 0)
-			time += length;
+		if(looping)
+			while(time < 0)
+				time += length;
+		else if(time < 0)
+			time = 0;
 
 		if(looping)
-		{
 			while(time >= length)
 				time -= length;
-		}
 		else if(time > length)
 			time = length;
 
