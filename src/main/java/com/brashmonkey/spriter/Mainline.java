@@ -48,6 +48,16 @@ public class Mainline
 		return found;
 	}
 
+	public MainlineKey next(MainlineKey previous, boolean wrapAround)
+	{
+		int index = keys.indexOf(previous, true);
+
+		if(index + 1 == keys.size)
+			return wrapAround ? keys.get(0) : keys.get(keys.size - 1);
+
+		return keys.get(index + 1);
+	}
+
 	public Array<MainlineKey> getKeys()
 	{
 		return keys;
