@@ -15,16 +15,15 @@ import com.brashmonkey.spriter.math.Curve;
  */
 public class Animation
 {
-	private String name;
-	private int length;
+	private final String name;
+	private final int length;
 	private boolean looping;
 
-	private Mainline mainline;
+	private final Mainline mainline;
 	private final Array<Timeline> timelines;
 
-	private Array<SpriterObject> tweenedObjects; //sprites made on runtime by tweening original sprites from animation
-
-	private OrderedMap<Integer, SpriterSprite> sprites;
+	private final Array<SpriterObject> tweenedObjects; //sprites made on runtime by tweening original sprites from animation
+	private final OrderedMap<Integer, SpriterSprite> sprites;
 
 	/**
 	 * Milliseconds
@@ -64,11 +63,11 @@ public class Animation
 
 	public Animation(Animation animation)
 	{
-		this(animation.getName(),
-				animation.getLength(),
-				animation.isLooping(),
+		this(animation.name,
+				animation.length,
+				animation.looping,
 				new Mainline(animation.mainline),
-				Timeline.clone(animation.getTimelines()));
+				Timeline.clone(animation.timelines));
 	}
 
 	public void draw(Batch batch)
@@ -92,9 +91,6 @@ public class Animation
 	 */
 	public void update(float delta)
 	{
-		if(tweenedObjects == null)
-			throw new IllegalStateException("Animation not prepared");
-
 		setTime(time + speed * delta);
 
 		MainlineKey currentKey = mainline.getKeyBeforeTime((int)time, looping);
@@ -170,11 +166,6 @@ public class Animation
 		return root;
 	}
 
-	public Mainline getMainline()
-	{
-		return mainline;
-	}
-
 	public Array<Timeline> getTimelines()
 	{
 		return timelines;
@@ -183,11 +174,6 @@ public class Animation
 	public String getName()
 	{
 		return name;
-	}
-
-	public void setName(String name)
-	{
-		this.name = name;
 	}
 
 	/**
@@ -240,11 +226,6 @@ public class Animation
 	public int getLength()
 	{
 		return length;
-	}
-
-	public void setLength(int length)
-	{
-		this.length = length;
 	}
 
 	public boolean isLooping()
