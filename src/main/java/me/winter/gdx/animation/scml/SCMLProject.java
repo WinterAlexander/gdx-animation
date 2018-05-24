@@ -1,18 +1,21 @@
-package com.brashmonkey.spriter;
+package me.winter.gdx.animation.scml;
 
 
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntMap;
+import me.winter.gdx.animation.EntityNotFoundException;
+import me.winter.gdx.animation.Entity;
+import me.winter.gdx.animation.drawable.TextureRegionDrawable;
 
 /**
- * Represents a .SCML project file for spriter
+ * Represents a .SCML project file for Spriter.
  *
  * @author Alexander Winter
  */
 public class SCMLProject
 {
 	private final IntMap<TextureRegionDrawable> assets;
-	private final Array<SpriterEntity> entities;
+	private final Array<Entity> entities;
 
 	public SCMLProject()
 	{
@@ -28,11 +31,11 @@ public class SCMLProject
 	 *
 	 * @throws EntityNotFoundException if the spriter entity could not be found
 	 */
-	public SpriterEntity getEntity(String name)
+	public Entity getEntity(String name)
 	{
-		for(SpriterEntity entity : entities)
+		for(Entity entity : entities)
 			if(entity.getName().equals(name))
-				return new SpriterEntity(entity);
+				return new Entity(entity);
 
 		throw new EntityNotFoundException(name);
 	}
@@ -47,7 +50,7 @@ public class SCMLProject
 		return assets.get(getAssetKey(folderID, fileID));
 	}
 
-	public Array<SpriterEntity> getSourceEntities()
+	public Array<Entity> getSourceEntities()
 	{
 		return entities;
 	}

@@ -1,4 +1,4 @@
-package com.brashmonkey.spriter;
+package me.winter.gdx.animation;
 
 import com.badlogic.gdx.utils.Array;
 
@@ -7,7 +7,7 @@ import com.badlogic.gdx.utils.Array;
  * mainline is responsible for telling which draw order the sprites have and how the objects are related to each other,
  * i.e. which bone is the root and which objects are the children.
  *
- * @author Trixt0r
+ * @author Alexander Winter
  */
 public class Mainline
 {

@@ -1,4 +1,4 @@
-package com.brashmonkey.spriter;
+package me.winter.gdx.animation;
 
 import com.badlogic.gdx.utils.IdentityMap;
 
@@ -6,7 +6,7 @@ import com.badlogic.gdx.utils.IdentityMap;
  * Represents a bone reference in a Spriter SCML file. A bone reference holds a {@link #timeline} and a
  * {@link #key}. A bone reference may have a parent reference.
  *
- * @author Trixt0r
+ * @author Alexander Winter
  */
 public class ObjectRef
 {

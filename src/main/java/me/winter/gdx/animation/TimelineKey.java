@@ -1,19 +1,19 @@
-package com.brashmonkey.spriter;
+package me.winter.gdx.animation;
 
-import com.brashmonkey.spriter.math.Curve;
+import me.winter.gdx.animation.math.Curve;
 
 /**
  * Represents a time line key in a Spriter SCML file. A key holds a {@link #time}, a {@link #spin}, an
  * {@link #getObject()} and a {@link #curve}.
  *
- * @author Trixt0r
+ * @author Alexander Winter
  */
 public class TimelineKey
 {
-	private int time;
-	private int spin;
-	private Curve curve;
-	private SpriterObject object;
+	private final int time;
+	private final int spin;
+	private final Curve curve;
+	private AnimatedPart object;
 
 	public TimelineKey(int time, int spin, Curve curve)
 	{
@@ -35,19 +35,9 @@ public class TimelineKey
 		return spin;
 	}
 
-	public void setSpin(int spin)
-	{
-		this.spin = spin;
-	}
-
 	public int getTime()
 	{
 		return time;
-	}
-
-	public void setTime(int time)
-	{
-		this.time = time;
 	}
 
 	public Curve getCurve()
@@ -55,19 +45,14 @@ public class TimelineKey
 		return curve;
 	}
 
-	public void setCurve(Curve curve)
-	{
-		this.curve = curve;
-	}
-
-	public void setObject(SpriterObject object)
-	{
-		this.object = object;
-	}
-
-	public SpriterObject getObject()
+	public AnimatedPart getObject()
 	{
 		return this.object;
+	}
+
+	public void setObject(AnimatedPart object)
+	{
+		this.object = object;
 	}
 
 }

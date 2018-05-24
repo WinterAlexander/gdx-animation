@@ -22,5 +22,5 @@ dependencies {
 }
 
 eclipse.project {
-    name = appName + "-spriter"
+    name = appName + "-animation"
 }

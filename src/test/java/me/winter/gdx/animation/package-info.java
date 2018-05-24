@@ -5,4 +5,4 @@
  *
  * @author Alexander Winter
  */
-package com.brashmonkey.spriter;
+package me.winter.gdx.animation;

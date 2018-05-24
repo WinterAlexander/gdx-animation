@@ -1,7 +1,7 @@
-package com.brashmonkey.spriter;
+package me.winter.gdx.animation;
 
 /**
- * Thrown when the specified SpriterEntity could not be found
+ * Thrown when the specified Entity could not be found
  * <p>
  * Created on 2018-05-24.
  *
@@ -11,6 +11,6 @@ public class EntityNotFoundException extends RuntimeException
 {
 	public EntityNotFoundException(String name)
 	{
-		super("SpriterEntity with name " + name + " could not be found.");
+		super("Entity with name " + name + " could not be found.");
 	}
 }

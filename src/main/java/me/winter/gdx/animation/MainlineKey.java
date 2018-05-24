@@ -1,14 +1,14 @@
-package com.brashmonkey.spriter;
+package me.winter.gdx.animation;
 
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IdentityMap;
-import com.brashmonkey.spriter.math.Curve;
+import me.winter.gdx.animation.math.Curve;
 
 /**
  * Represents a mainline key in a Spriter SCML file. A mainline key holds a {@link #time}, a {@link
  * #curve} and lists of bone and object references which build a tree hierarchy.
  *
- * @author Trixt0r
+ * @author Alexander Winter
  */
 public class MainlineKey
 {

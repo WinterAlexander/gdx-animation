@@ -1,4 +1,4 @@
-package com.brashmonkey.spriter;
+package me.winter.gdx.animation.scml;
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
@@ -6,13 +6,24 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.XmlReader;
 import com.badlogic.gdx.utils.XmlReader.Element;
-import com.brashmonkey.spriter.math.Curve;
-import com.brashmonkey.spriter.math.Curve.CurveType;
+import me.winter.gdx.animation.AnimatedPart;
+import me.winter.gdx.animation.Animation;
+import me.winter.gdx.animation.Entity;
+import me.winter.gdx.animation.Mainline;
+import me.winter.gdx.animation.MainlineKey;
+import me.winter.gdx.animation.ObjectRef;
+import me.winter.gdx.animation.Sprite;
+import me.winter.gdx.animation.Timeline;
+import me.winter.gdx.animation.TimelineKey;
+import me.winter.gdx.animation.drawable.TextureRegionDrawable;
+import me.winter.gdx.animation.math.Curve;
+import me.winter.gdx.animation.math.Curve.CurveType;
+import me.winter.gdx.animation.SpriteTimeline;
 
 import java.io.InputStream;
 
 /**
- * SCML file parser
+ * File parser for .SCML files (spriter format)
  *
  * @author Alexander Winter
  */
@@ -106,7 +117,7 @@ public class SCMLReader
 	{
 		for(Element xmlElement : entities)
 		{
-			SpriterEntity entity = new SpriterEntity(xmlElement.get("name"));
+			Entity entity = new Entity(xmlElement.get("name"));
 
 			loadAnimations(xmlElement.getChildrenByName("animation"), entity);
 
@@ -115,12 +126,12 @@ public class SCMLReader
 	}
 
 	/**
-	 * Iterates through the given animations and adds them to the given {@link SpriterEntity} object.
+	 * Iterates through the given animations and adds them to the given {@link Entity} object.
 	 *
 	 * @param animations a list of animations to load
 	 * @param entity the entity containing the animations maps
 	 */
-	private void loadAnimations(Array<Element> animations, SpriterEntity entity)
+	private void loadAnimations(Array<Element> animations, Entity entity)
 	{
 		for(Element xmlElement : animations)
 		{
@@ -198,13 +209,13 @@ public class SCMLReader
 			int id = xmlElement.getInt("id");
 			String name = xmlElement.get("name");
 
-			if(timelineKeys.size == 0 || !(timelineKeys.get(0).getObject() instanceof SpriterSprite))
+			if(timelineKeys.size == 0 || !(timelineKeys.get(0).getObject() instanceof Sprite))
 				timelines.add(new Timeline(id, name, timelineKeys));
 			else
 			{
 				int timelineId = xmlElement.getInt("id", -1);
 
-				timelines.add(new DrawableTimeline(id, name, timelineKeys, zIndexTempMap.get(timelineId)));
+				timelines.add(new SpriteTimeline(id, name, timelineKeys, zIndexTempMap.get(timelineId)));
 			}
 
 		}
@@ -239,10 +250,10 @@ public class SCMLReader
 				TextureRegionDrawable asset = currentProject.getAsset(obj.getInt("folder"), obj.getInt("file")); //corresponding sprite
 
 				float alpha = obj.getFloat("a", 1f);
-				key.setObject(new SpriterSprite(asset, position, scale, angle, alpha));
+				key.setObject(new Sprite(asset, position, scale, angle, alpha));
 			}
 			else if(type.equalsIgnoreCase("bone"))
-				key.setObject(new SpriterObject(position, scale, angle));
+				key.setObject(new AnimatedPart(position, scale, angle));
 
 
 			timelineKeys.add(key);

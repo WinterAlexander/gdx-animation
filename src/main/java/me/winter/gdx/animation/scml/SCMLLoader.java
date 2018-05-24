@@ -1,4 +1,4 @@
-package com.brashmonkey.spriter;
+package me.winter.gdx.animation.scml;
 
 import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.assets.AssetLoaderParameters;
@@ -8,10 +8,10 @@ import com.badlogic.gdx.assets.loaders.SynchronousAssetLoader;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.utils.Array;
-import com.brashmonkey.spriter.SCMLLoader.SCMLProjectParameters;
+import me.winter.gdx.animation.scml.SCMLLoader.SCMLProjectParameters;
 
 /**
- * Loads any SCML file into LibGDX
+ * Loads a SCML file (Spriter format) into LibGDX's AssetManager
  * <p>
  * Created on 2017-01-16.
  *

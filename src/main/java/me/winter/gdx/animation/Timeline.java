@@ -1,4 +1,4 @@
-package com.brashmonkey.spriter;
+package me.winter.gdx.animation;
 
 import com.badlogic.gdx.utils.Array;
 
@@ -6,12 +6,12 @@ import com.badlogic.gdx.utils.Array;
  * Represents a time line in a Spriter SCML file. A time line holds an {@link #id}, a {@link #name} and at least one
  * {@link TimelineKey}.
  *
- * @author Trixt0r
+ * @author Alexander Winter
  */
 public class Timeline
 {
-	private int id;
-	private String name;
+	private final int id;
+	private final String name;
 
 	private final Array<TimelineKey> keys;
 
@@ -43,19 +43,9 @@ public class Timeline
 		return id;
 	}
 
-	public void setId(int id)
-	{
-		this.id = id;
-	}
-
 	public String getName()
 	{
 		return name;
-	}
-
-	public void setName(String name)
-	{
-		this.name = name;
 	}
 
 	public Array<TimelineKey> getKeys()

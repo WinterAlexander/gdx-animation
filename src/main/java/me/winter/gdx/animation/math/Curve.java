@@ -1,15 +1,15 @@
-package com.brashmonkey.spriter.math;
+package me.winter.gdx.animation.math;
 
 import com.badlogic.gdx.math.Vector2;
 
-import static com.brashmonkey.spriter.math.Interpolator.*;
+import static me.winter.gdx.animation.math.Interpolator.*;
 
 /**
  * Represents a curve in a Spriter SCML file. An instance of this class is responsible for tweening given data. The most
  * important method of this class is {@link #tween(float, float, float)}. Curves can be changed with sub curves {@link
  * Curve#subCurve}.
  *
- * @author Trixt0r
+ * @author Alexander Winter
  */
 public class Curve
 {
@@ -126,7 +126,7 @@ public class Curve
 	/**
 	 * Represents constraints for a curve. Constraints are important for curves which have a order higher than 1.
 	 *
-	 * @author Trixt0r
+	 * @author Alexander Winter
 	 */
 	public static class Constraints
 	{
@@ -149,7 +149,7 @@ public class Curve
 	/**
 	 * Represents a curve type in a Spriter SCML file.
 	 *
-	 * @author Trixt0r
+	 * @author Alexander Winter
 	 */
 	public enum CurveType
 	{

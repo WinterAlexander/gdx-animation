@@ -1,15 +1,18 @@
-package com.brashmonkey.spriter;
+package me.winter.gdx.animation.drawable;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
+import me.winter.gdx.animation.AnimatedPart;
+import me.winter.gdx.animation.Animation;
+import me.winter.gdx.animation.Sprite;
 
 /**
- * Draws an animation into a SpriterSprite
+ * Draws an animation into a Sprite
  * <p>
  * Created on 2018-05-24.
  *
  * @author Alexander Winter
  */
-public class AnimationDrawable implements SpriterDrawable
+public class AnimationDrawable implements SpriteDrawable
 {
 	private Animation animation;
 	private float scale;
@@ -21,9 +24,9 @@ public class AnimationDrawable implements SpriterDrawable
 	}
 
 	@Override
-	public void draw(SpriterSprite sprite, Batch batch)
+	public void draw(Sprite sprite, Batch batch)
 	{
-		SpriterObject obj = animation.getRoot();
+		AnimatedPart obj = animation.getRoot();
 
 		obj.getPosition().set(sprite.getPosition());
 		obj.getScale().set(sprite.getScale().x * scale, sprite.getScale().y * scale);

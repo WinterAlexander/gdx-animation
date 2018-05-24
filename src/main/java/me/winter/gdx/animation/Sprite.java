@@ -1,25 +1,26 @@
-package com.brashmonkey.spriter;
+package me.winter.gdx.animation;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector2;
+import me.winter.gdx.animation.drawable.SpriteDrawable;
 
 /**
  * Represents an object in a Spriter SCML file. A file has the same properties
  * as a bone with an alpha and file extension.
  *
- * @author Trixt0r
+ * @author Alexander Winter
  */
-public class SpriterSprite extends SpriterObject
+public class Sprite extends AnimatedPart
 {
-	private SpriterDrawable drawable;
+	private SpriteDrawable drawable;
 	private float alpha;
 
-	public SpriterSprite()
+	public Sprite()
 	{
 		this(null, new Vector2(0, 0), new Vector2(1f, 1f), 0f, 1f);
 	}
 
-	public SpriterSprite(SpriterSprite other)
+	public Sprite(Sprite other)
 	{
 		super(other);
 
@@ -27,7 +28,7 @@ public class SpriterSprite extends SpriterObject
 		this.alpha = other.alpha;
 	}
 
-	public SpriterSprite(SpriterDrawable drawable, Vector2 position, Vector2 scale, float angle, float alpha)
+	public Sprite(SpriteDrawable drawable, Vector2 position, Vector2 scale, float angle, float alpha)
 	{
 		super(position, scale, angle);
 		this.alpha = alpha;
@@ -46,23 +47,23 @@ public class SpriterSprite extends SpriterObject
 	 * @param object the object
 	 */
 	@Override
-	public void set(SpriterObject object)
+	public void set(AnimatedPart object)
 	{
 		super.set(object);
 
-		if(object instanceof SpriterSprite)
+		if(object instanceof Sprite)
 		{
-			this.alpha = ((SpriterSprite)object).alpha;
-			this.drawable = ((SpriterSprite)object).drawable;
+			this.alpha = ((Sprite)object).alpha;
+			this.drawable = ((Sprite)object).drawable;
 		}
 	}
 
-	public SpriterDrawable getDrawable()
+	public SpriteDrawable getDrawable()
 	{
 		return drawable;
 	}
 
-	public void setDrawable(SpriterDrawable drawable)
+	public void setDrawable(SpriteDrawable drawable)
 	{
 		this.drawable = drawable;
 	}

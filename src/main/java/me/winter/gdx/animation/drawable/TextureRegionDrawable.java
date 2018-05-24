@@ -1,15 +1,16 @@
-package com.brashmonkey.spriter;
+package me.winter.gdx.animation.drawable;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import me.winter.gdx.animation.Sprite;
 
 /**
- * Draws the content of a texture region into a SpriterSprite
+ * Draws the content of a texture region into a Sprite
  *
  * @author Alexander Winter
  */
-public class TextureRegionDrawable implements SpriterDrawable
+public class TextureRegionDrawable implements SpriteDrawable
 {
 	private final TextureRegion region;
 	private final float pivotX, pivotY;
@@ -43,7 +44,7 @@ public class TextureRegionDrawable implements SpriterDrawable
 	}
 
 	@Override
-	public void draw(SpriterSprite sprite, Batch batch)
+	public void draw(Sprite sprite, Batch batch)
 	{
 		if(region == null || region.getTexture() == null)
 			return;

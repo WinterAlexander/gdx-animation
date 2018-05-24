@@ -1,17 +1,17 @@
-package com.brashmonkey.spriter;
+package me.winter.gdx.animation;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.OrderedMap;
-import com.brashmonkey.spriter.math.Curve;
+import me.winter.gdx.animation.math.Curve;
 
 /**
  * Represents an animation of a Spriter SCML file. An animation holds {@link Timeline}s and a {@link Mainline} to
  * animate objects. Furthermore it holds a {@link #length}, a {@link #name} and whether it is {@link
  * #looping} or not.
  *
- * @author Trixt0r
+ * @author Alexander Winter
  */
 public class Animation
 {
@@ -22,8 +22,8 @@ public class Animation
 	private final Mainline mainline;
 	private final Array<Timeline> timelines;
 
-	private final Array<SpriterObject> tweenedObjects; //sprites made on runtime by tweening original sprites from animation
-	private final OrderedMap<Integer, SpriterSprite> sprites;
+	private final Array<AnimatedPart> tweenedObjects; //sprites made on runtime by tweening original sprites from animation
+	private final OrderedMap<Integer, Sprite> sprites;
 
 	/**
 	 * Milliseconds
@@ -31,7 +31,7 @@ public class Animation
 	private float time = 0;
 	private float speed = 1f, alpha = 1f;
 
-	private SpriterObject root = new SpriterObject();
+	private AnimatedPart root = new AnimatedPart();
 
 	public Animation(String name, int length, boolean looping, Mainline mainline, Array<Timeline> timelines)
 	{
@@ -43,19 +43,19 @@ public class Animation
 		this.mainline = mainline;
 		this.timelines = timelines;
 
-		tweenedObjects = new Array<>(new SpriterObject[timelines.size]);
+		tweenedObjects = new Array<>(new AnimatedPart[timelines.size]);
 		sprites = new OrderedMap<>();
 
 		for(Timeline timeline : timelines)
 		{
-			if(timeline instanceof DrawableTimeline)
+			if(timeline instanceof SpriteTimeline)
 			{
-				SpriterSprite sprite = new SpriterSprite();
+				Sprite sprite = new Sprite();
 				tweenedObjects.set(timeline.getId(), sprite);
-				sprites.put(((DrawableTimeline)timeline).getZIndex(), sprite);
+				sprites.put(((SpriteTimeline)timeline).getZIndex(), sprite);
 			}
 			else
-				tweenedObjects.set(timeline.getId(), new SpriterObject());
+				tweenedObjects.set(timeline.getId(), new AnimatedPart());
 		}
 
 		sprites.orderedKeys().sort();
@@ -77,7 +77,7 @@ public class Animation
 		tmp.a *= alpha;
 		batch.setColor(tmp);
 
-		for(SpriterSprite sprite : sprites.values())
+		for(Sprite sprite : sprites.values())
 			sprite.draw(batch);
 
 		batch.setColor(prevColor);
@@ -113,11 +113,11 @@ public class Animation
 			if(!looping)
 			{
 				//no need to tween, stay freezed at first sprite
-				SpriterObject tweenTarget = tweenedObjects.get(ref.timeline);
+				AnimatedPart tweenTarget = tweenedObjects.get(ref.timeline);
 
 				tweenTarget.set(key.getObject());
 
-				SpriterObject parent = ref.parent != null ? tweenedObjects.get(ref.parent.timeline) : root;
+				AnimatedPart parent = ref.parent != null ? tweenedObjects.get(ref.parent.timeline) : root;
 				tweenTarget.unmap(parent);
 				return;
 			}
@@ -135,9 +135,9 @@ public class Animation
 		float timeRatio = currentKey.curve.interpolate(0f, 1f, (time - key.getTime()) / timeDiff);
 
 		//Tween object
-		SpriterObject obj1 = key.getObject();
-		SpriterObject obj2 = nextKey.getObject();
-		SpriterObject tweened = tweenedObjects.get(ref.timeline);
+		AnimatedPart obj1 = key.getObject();
+		AnimatedPart obj2 = nextKey.getObject();
+		AnimatedPart tweened = tweenedObjects.get(ref.timeline);
 
 		Curve curve = key.getCurve();
 
@@ -146,10 +146,10 @@ public class Animation
 		curve.interpolateVector(obj1.getPosition(), obj2.getPosition(), timeRatio, tweened.getPosition());
 		curve.interpolateVector(obj1.getScale(), obj2.getScale(), timeRatio, tweened.getScale());
 
-		if(timeline instanceof DrawableTimeline)
+		if(timeline instanceof SpriteTimeline)
 		{
-			((SpriterSprite)tweened).setAlpha(curve.interpolate(((SpriterSprite)obj1).getAlpha(), ((SpriterSprite)obj2).getAlpha(), timeRatio));
-			((SpriterSprite)tweened).setDrawable(((SpriterSprite)obj1).getDrawable());
+			((Sprite)tweened).setAlpha(curve.interpolate(((Sprite)obj1).getAlpha(), ((Sprite)obj2).getAlpha(), timeRatio));
+			((Sprite)tweened).setDrawable(((Sprite)obj1).getDrawable());
 		}
 
 		tweened.unmap(ref.parent != null ? tweenedObjects.get(ref.parent.timeline) : root);
@@ -161,7 +161,7 @@ public class Animation
 		update(0);
 	}
 
-	public SpriterObject getRoot()
+	public AnimatedPart getRoot()
 	{
 		return root;
 	}

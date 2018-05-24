@@ -1,6 +1,9 @@
-package com.brashmonkey.spriter;
+package me.winter.gdx.animation;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.Array;
+import me.winter.gdx.animation.drawable.SpriteDrawable;
+import me.winter.gdx.animation.drawable.TintedDrawable;
 
 /**
  * Represents a set of animation under a common name. Usually associated to a
@@ -8,23 +11,23 @@ import com.badlogic.gdx.utils.Array;
  *
  * @author Alexander Winter
  */
-public class SpriterEntity
+public class Entity
 {
 	private final String name;
 	private final Array<Animation> animations;
 
-	public SpriterEntity(String name)
+	public Entity(String name)
 	{
 		this(name, new Array<>());
 	}
 
-	public SpriterEntity(String name, Array<Animation> animations)
+	public Entity(String name, Array<Animation> animations)
 	{
 		this.name = name;
 		this.animations = animations;
 	}
 
-	public SpriterEntity(SpriterEntity entity)
+	public Entity(Entity entity)
 	{
 		this.name = entity.name;
 		this.animations = new Array<>(entity.animations.size);
@@ -39,14 +42,26 @@ public class SpriterEntity
 	 * @param name name of the sprite
 	 * @param drawable drawable to set
 	 */
-	public void setSpriteDrawable(String name, SpriterDrawable drawable)
+	public void setSpriteDrawable(String name, SpriteDrawable drawable)
 	{
 		for(Animation animation : animations)
 			for(Timeline timeline : animation.getTimelines())
 				if(timeline.getName().equals(name))
 					for(TimelineKey key : timeline.getKeys())
-						if(key.getObject() instanceof SpriterSprite)
-							((SpriterSprite)key.getObject()).setDrawable(drawable);
+						if(key.getObject() instanceof Sprite)
+							((Sprite)key.getObject()).setDrawable(drawable);
+	}
+
+	public void tintSprite(String name, Color color)
+	{
+		for(Animation animation : animations)
+			for(Timeline timeline : animation.getTimelines())
+				if(timeline.getName().equals(name))
+					for(TimelineKey key : timeline.getKeys())
+						if(key.getObject() instanceof Sprite)
+							((Sprite)key.getObject()).setDrawable(new TintedDrawable(
+									((Sprite)key.getObject()).getDrawable(),
+									color));
 	}
 
 	public void setAlpha(float alpha)

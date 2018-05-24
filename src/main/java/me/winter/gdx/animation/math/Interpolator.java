@@ -1,4 +1,4 @@
-package com.brashmonkey.spriter.math;
+package me.winter.gdx.animation.math;
 
 
 import com.badlogic.gdx.math.MathUtils;
@@ -10,7 +10,7 @@ import static java.lang.Math.pow;
 /**
  * Utility class for various interpolation techniques Spriter is using.
  *
- * @author Trixt0r
+ * @author Alexander Winter
  */
 public class Interpolator
 {

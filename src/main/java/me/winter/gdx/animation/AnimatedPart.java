@@ -1,4 +1,4 @@
-package com.brashmonkey.spriter;
+package me.winter.gdx.animation;
 
 import com.badlogic.gdx.math.Vector2;
 
@@ -9,9 +9,9 @@ import static java.lang.Math.signum;
  * {@link #scale}, an {@link #angle} and a {@link #pivot}. Bones are the only
  * objects which can be used as a parent for other tweenable objects.
  *
- * @author Trixt0r
+ * @author Alexander Winter
  */
-public class SpriterObject
+public class AnimatedPart
 {
 	private final Vector2 position, scale;
 	private float angle;
@@ -19,19 +19,19 @@ public class SpriterObject
 	/**
 	 * Constructor for root
 	 */
-	public SpriterObject()
+	public AnimatedPart()
 	{
 		this(new Vector2(), new Vector2(1, 1), 0);
 	}
 
-	public SpriterObject(SpriterObject other)
+	public AnimatedPart(AnimatedPart other)
 	{
 		this.position = new Vector2(other.position);
 		this.scale = new Vector2(other.scale);
 		this.angle = other.angle;
 	}
 
-	public SpriterObject(Vector2 position, Vector2 scale, float angle)
+	public AnimatedPart(Vector2 position, Vector2 scale, float angle)
 	{
 		this.position = position;
 		this.scale = scale;
@@ -43,7 +43,7 @@ public class SpriterObject
 	 *
 	 * @param object the object
 	 */
-	public void set(SpriterObject object)
+	public void set(AnimatedPart object)
 	{
 		this.angle = object.angle;
 		this.position.set(object.position.x, object.position.y);
@@ -55,7 +55,7 @@ public class SpriterObject
 	 *
 	 * @param parent the parent bone of this bone
 	 */
-	public void unmap(SpriterObject parent)
+	public void unmap(AnimatedPart parent)
 	{
 		this.angle *= signum(parent.scale.x) * signum(parent.scale.y);
 		this.angle += parent.angle;
@@ -66,7 +66,7 @@ public class SpriterObject
 	}
 
 	@Override
-	public SpriterObject clone()
+	public AnimatedPart clone()
 	{
 		try
 		{
