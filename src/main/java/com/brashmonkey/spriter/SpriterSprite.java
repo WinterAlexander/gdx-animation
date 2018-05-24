@@ -1,35 +1,43 @@
 package com.brashmonkey.spriter;
 
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector2;
 
 /**
- * Represents an object in a Spriter SCML file. A file has the same properties as a bone with an alpha and file
- * extension.
+ * Represents an object in a Spriter SCML file. A file has the same properties
+ * as a bone with an alpha and file extension.
  *
  * @author Trixt0r
  */
 public class SpriterSprite extends SpriterObject
 {
-	private SpriterAsset asset;
+	private SpriterDrawable drawable;
 	private float alpha;
 
 	public SpriterSprite()
 	{
-		this(null, new Vector2(0, 0), new Vector2(1f, 1f), new Vector2(0f, 1f), 0f, 1f);
+		this(null, new Vector2(0, 0), new Vector2(1f, 1f), 0f, 1f);
 	}
 
 	public SpriterSprite(SpriterSprite other)
 	{
 		super(other);
-		this.asset = new SpriterAsset(other.asset);
+
+		this.drawable = other.drawable;
 		this.alpha = other.alpha;
 	}
 
-	public SpriterSprite(SpriterAsset asset, Vector2 position, Vector2 scale, Vector2 pivot, float angle, float alpha)
+	public SpriterSprite(SpriterDrawable drawable, Vector2 position, Vector2 scale, float angle, float alpha)
 	{
-		super(position, scale, pivot, angle);
+		super(position, scale, angle);
 		this.alpha = alpha;
-		this.asset = asset;
+		this.drawable = drawable;
+	}
+
+	public void draw(Batch batch)
+	{
+		if(drawable != null)
+			drawable.draw(this, batch);
 	}
 
 	/**
@@ -45,19 +53,18 @@ public class SpriterSprite extends SpriterObject
 		if(object instanceof SpriterSprite)
 		{
 			this.alpha = ((SpriterSprite)object).alpha;
-			this.asset = ((SpriterSprite)object).asset;
+			this.drawable = ((SpriterSprite)object).drawable;
 		}
 	}
 
-
-	public SpriterAsset getAsset()
+	public SpriterDrawable getDrawable()
 	{
-		return asset;
+		return drawable;
 	}
 
-	public void setAsset(SpriterAsset asset)
+	public void setDrawable(SpriterDrawable drawable)
 	{
-		this.asset = asset;
+		this.drawable = drawable;
 	}
 
 	public float getAlpha()

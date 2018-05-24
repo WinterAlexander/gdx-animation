@@ -11,7 +11,7 @@ import com.badlogic.gdx.utils.Array;
 import com.brashmonkey.spriter.SCMLLoader.SCMLProjectParameters;
 
 /**
- * Undocumented :(
+ * Loads any SCML file into LibGDX
  * <p>
  * Created on 2017-01-16.
  *

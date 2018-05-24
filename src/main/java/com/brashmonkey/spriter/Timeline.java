@@ -62,4 +62,14 @@ public class Timeline
 	{
 		return keys;
 	}
+
+	public static Array<Timeline> clone(Array<Timeline> timelines)
+	{
+		Array<Timeline> copy = new Array<>();
+
+		for(Timeline timeline : timelines)
+			copy.add(timeline.clone());
+
+		return copy;
+	}
 }

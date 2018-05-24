@@ -3,6 +3,7 @@ package com.brashmonkey.spriter;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.OrderedMap;
 import com.brashmonkey.spriter.math.Curve;
 
 /**
@@ -22,9 +23,8 @@ public class Animation
 	private final Array<Timeline> timelines;
 
 	private Array<SpriterObject> tweenedObjects; //sprites made on runtime by tweening original sprites from animation
-	private Array<SpriterDrawable> sprites;
 
-	private MainlineKey currentKey;
+	private OrderedMap<Integer, SpriterSprite> sprites;
 
 	/**
 	 * Milliseconds
@@ -44,45 +44,31 @@ public class Animation
 		this.mainline = mainline;
 		this.timelines = timelines;
 
-		prepare();
-	}
-
-	public Animation(Animation animation)
-	{
-		this.name = animation.getName();
-
-		this.length = animation.length;
-		this.looping = animation.looping;
-
-		this.mainline = new Mainline(animation.mainline);
-		this.timelines = new Array<>(animation.getTimelines().size);
-
-		for(Timeline timeline : animation.getTimelines())
-			timelines.add(timeline.clone());
-
-		prepare();
-	}
-
-	public void prepare()
-	{
 		tweenedObjects = new Array<>(new SpriterObject[timelines.size]);
-		sprites = new Array<>(timelines.size);
+		sprites = new OrderedMap<>();
 
 		for(Timeline timeline : timelines)
 		{
-			if(timeline instanceof SpriteTimeline)
+			if(timeline instanceof DrawableTimeline)
 			{
 				SpriterSprite sprite = new SpriterSprite();
 				tweenedObjects.set(timeline.getId(), sprite);
-				sprites.add(new SpriterDrawable(sprite, ((SpriteTimeline)timeline).getZIndex()));
+				sprites.put(((DrawableTimeline)timeline).getZIndex(), sprite);
 			}
 			else
 				tweenedObjects.set(timeline.getId(), new SpriterObject());
 		}
 
-		sprites.sort();
+		sprites.orderedKeys().sort();
+	}
 
-		currentKey = mainline.getKeyBeforeTime(0, looping);
+	public Animation(Animation animation)
+	{
+		this(animation.getName(),
+				animation.getLength(),
+				animation.isLooping(),
+				new Mainline(animation.mainline),
+				Timeline.clone(animation.getTimelines()));
 	}
 
 	public void draw(Batch batch)
@@ -92,7 +78,7 @@ public class Animation
 		tmp.a *= alpha;
 		batch.setColor(tmp);
 
-		for(SpriterDrawable sprite : sprites)
+		for(SpriterSprite sprite : sprites.values())
 			sprite.draw(batch);
 
 		batch.setColor(prevColor);
@@ -163,12 +149,11 @@ public class Animation
 
 		curve.interpolateVector(obj1.getPosition(), obj2.getPosition(), timeRatio, tweened.getPosition());
 		curve.interpolateVector(obj1.getScale(), obj2.getScale(), timeRatio, tweened.getScale());
-		curve.interpolateVector(obj1.getPivot(), obj2.getPivot(), timeRatio, tweened.getPivot());
 
-		if(timeline instanceof SpriteTimeline)
+		if(timeline instanceof DrawableTimeline)
 		{
 			((SpriterSprite)tweened).setAlpha(curve.interpolate(((SpriterSprite)obj1).getAlpha(), ((SpriterSprite)obj2).getAlpha(), timeRatio));
-			((SpriterSprite)tweened).setAsset(((SpriterSprite)obj1).getAsset());
+			((SpriterSprite)tweened).setDrawable(((SpriterSprite)obj1).getDrawable());
 		}
 
 		tweened.unmap(ref.parent != null ? tweenedObjects.get(ref.parent.timeline) : root);
@@ -178,7 +163,6 @@ public class Animation
 	{
 		time = 0;
 		update(0);
-		currentKey = mainline.getKeyBeforeTime(0, looping);
 	}
 
 	public SpriterObject getRoot()

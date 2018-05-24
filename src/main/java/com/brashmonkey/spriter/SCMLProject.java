@@ -5,13 +5,13 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntMap;
 
 /**
- * Represents a project file for spriter
+ * Represents a .SCML project file for spriter
  *
- * @author Trixt0r
+ * @author Alexander Winter
  */
 public class SCMLProject
 {
-	private final IntMap<SpriterAsset> assets;
+	private final IntMap<TextureRegionDrawable> assets;
 	private final Array<SpriterEntity> entities;
 
 	public SCMLProject()
@@ -24,7 +24,9 @@ public class SCMLProject
 	 * Returns an copy of the requested SpriterEntity
 	 *
 	 * @param name the name of the entity
-	 * @return the entity with the given name or null if no entity with the given name exists
+	 * @return the entity with the given name
+	 *
+	 * @throws EntityNotFoundException if the spriter entity could not be found
 	 */
 	public SpriterEntity getEntity(String name)
 	{
@@ -32,15 +34,15 @@ public class SCMLProject
 			if(entity.getName().equals(name))
 				return new SpriterEntity(entity);
 
-		return null;
+		throw new EntityNotFoundException(name);
 	}
 
-	public void putAsset(int folderID, int fileID, SpriterAsset asset)
+	public void putAsset(int folderID, int fileID, TextureRegionDrawable asset)
 	{
 		assets.put(getAssetKey(folderID, fileID), asset);
 	}
 
-	public SpriterAsset getAsset(int folderID, int fileID)
+	public TextureRegionDrawable getAsset(int folderID, int fileID)
 	{
 		return assets.get(getAssetKey(folderID, fileID));
 	}

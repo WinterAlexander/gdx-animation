@@ -3,9 +3,10 @@ package com.brashmonkey.spriter;
 import com.badlogic.gdx.utils.Array;
 
 /**
- * Represents an entity of a Spriter SCML file. An entity holds {@link Animation}s, a {@link #name}.
+ * Represents a set of animation under a common name. Usually associated to a
+ * single game object.
  *
- * @author Trixt0r
+ * @author Alexander Winter
  */
 public class SpriterEntity
 {
@@ -32,14 +33,20 @@ public class SpriterEntity
 			animations.add(new Animation(animation));
 	}
 
-	public void setAsset(String name, SpriterAsset newAsset)
+	/**
+	 * Set the drawable of the name specified sprite in all animations for all
+	 * timelines
+	 * @param name name of the sprite
+	 * @param drawable drawable to set
+	 */
+	public void setSpriteDrawable(String name, SpriterDrawable drawable)
 	{
 		for(Animation animation : animations)
 			for(Timeline timeline : animation.getTimelines())
 				if(timeline.getName().equals(name))
 					for(TimelineKey key : timeline.getKeys())
 						if(key.getObject() instanceof SpriterSprite)
-							((SpriterSprite)key.getObject()).setAsset(newAsset);
+							((SpriterSprite)key.getObject()).setDrawable(drawable);
 	}
 
 	public void setAlpha(float alpha)

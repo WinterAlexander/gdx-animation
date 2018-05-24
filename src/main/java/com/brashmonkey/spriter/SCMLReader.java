@@ -3,23 +3,18 @@ package com.brashmonkey.spriter;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.IntMap;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.XmlReader;
 import com.badlogic.gdx.utils.XmlReader.Element;
 import com.brashmonkey.spriter.math.Curve;
 import com.brashmonkey.spriter.math.Curve.CurveType;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * This class parses a SCML file and creates a {@link SCMLProject} instance. If you want to keep track of what is going
- * on during the build process of the objects parsed from the SCML file, you could extend this class and override the
- * load*() methods for pre or post processing. This could be e.g. useful for a loading screen which responds to the
- * current building or parsing state.
+ * SCML file parser
  *
- * @author Trixt0r
+ * @author Alexander Winter
  */
 public class SCMLReader
 {
@@ -92,9 +87,8 @@ public class SCMLReader
 				String[] parts = name.split("/");
 				name = parts[parts.length - 1].replace(".png", "");
 
-				SpriterAsset asset = new SpriterAsset(
+				TextureRegionDrawable asset = new TextureRegionDrawable(
 						atlas.findRegion(name),
-						name,
 						file.getFloat("pivot_x", 0f),
 						file.getFloat("pivot_y", 1f));
 
@@ -204,13 +198,13 @@ public class SCMLReader
 			int id = xmlElement.getInt("id");
 			String name = xmlElement.get("name");
 
-			if(timelineKeys.size == 0 || timelineKeys.get(0).getObject() instanceof SpriterBone)
+			if(timelineKeys.size == 0 || !(timelineKeys.get(0).getObject() instanceof SpriterSprite))
 				timelines.add(new Timeline(id, name, timelineKeys));
 			else
 			{
 				int timelineId = xmlElement.getInt("id", -1);
 
-				timelines.add(new SpriteTimeline(id, name, timelineKeys, zIndexTempMap.get(timelineId)));
+				timelines.add(new DrawableTimeline(id, name, timelineKeys, zIndexTempMap.get(timelineId)));
 			}
 
 		}
@@ -240,17 +234,15 @@ public class SCMLReader
 
 			float angle = obj.getFloat("angle", 0f);
 
-			if(type.equalsIgnoreCase("object") || type.equalsIgnoreCase("sprite")) //TODO check which is valid
+			if(type.equalsIgnoreCase("object") || type.equalsIgnoreCase("sprite"))
 			{
-				SpriterAsset asset = currentProject.getAsset(obj.getInt("folder"), obj.getInt("file")); //corresponding sprite
+				TextureRegionDrawable asset = currentProject.getAsset(obj.getInt("folder"), obj.getInt("file")); //corresponding sprite
 
 				float alpha = obj.getFloat("a", 1f);
-				Vector2 pivot = new Vector2(obj.getFloat("pivot_x", asset.getPivotX()), obj.getFloat("pivot_y", asset.getPivotY()));
-
-				key.setObject(new SpriterSprite(asset, position, scale, pivot, angle, alpha));
+				key.setObject(new SpriterSprite(asset, position, scale, angle, alpha));
 			}
 			else if(type.equalsIgnoreCase("bone"))
-				key.setObject(new SpriterBone(position, scale, new Vector2(obj.getFloat("pivot_x", 0f), obj.getFloat("pivot_y", 0.5f)), angle));
+				key.setObject(new SpriterObject(position, scale, angle));
 
 
 			timelineKeys.add(key);
