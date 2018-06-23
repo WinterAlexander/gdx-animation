@@ -80,6 +80,16 @@ public class Entity
 		return animations.get(index);
 	}
 
+	public int getAnimationId(String name)
+	{
+		return animations.indexOf(getAnimation(name), true);
+	}
+
+	public int getAnimationId(Animation animation)
+	{
+		return animations.indexOf(animation, true);
+	}
+
 	/**
 	 * Returns an Animation for the specified name
 	 *
