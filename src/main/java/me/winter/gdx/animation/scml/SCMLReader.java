@@ -15,7 +15,7 @@ import me.winter.gdx.animation.ObjectRef;
 import me.winter.gdx.animation.Sprite;
 import me.winter.gdx.animation.Timeline;
 import me.winter.gdx.animation.TimelineKey;
-import me.winter.gdx.animation.drawable.TextureRegionDrawable;
+import me.winter.gdx.animation.drawable.TextureSpriteDrawable;
 import me.winter.gdx.animation.math.Curve;
 import me.winter.gdx.animation.math.Curve.CurveType;
 import me.winter.gdx.animation.SpriteTimeline;
@@ -98,7 +98,7 @@ public class SCMLReader
 				String[] parts = name.split("/");
 				name = parts[parts.length - 1].replace(".png", "");
 
-				TextureRegionDrawable asset = new TextureRegionDrawable(
+				TextureSpriteDrawable asset = new TextureSpriteDrawable(
 						atlas.findRegion(name),
 						file.getFloat("pivot_x", 0f),
 						file.getFloat("pivot_y", 1f));
@@ -247,7 +247,7 @@ public class SCMLReader
 
 			if(type.equalsIgnoreCase("object") || type.equalsIgnoreCase("sprite"))
 			{
-				TextureRegionDrawable asset = currentProject.getAsset(obj.getInt("folder"), obj.getInt("file")); //corresponding sprite
+				TextureSpriteDrawable asset = currentProject.getAsset(obj.getInt("folder"), obj.getInt("file")); //corresponding sprite
 
 				float alpha = obj.getFloat("a", 1f);
 				key.setObject(new Sprite(asset, position, scale, angle, alpha));

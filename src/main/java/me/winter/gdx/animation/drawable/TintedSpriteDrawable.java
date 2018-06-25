@@ -11,15 +11,15 @@ import me.winter.gdx.animation.Sprite;
  *
  * @author Alexander Winter
  */
-public class TintedDrawable implements SpriteDrawable
+public class TintedSpriteDrawable implements SpriteDrawable
 {
 	private final SpriteDrawable drawable;
-	private final Color color;
+	private final Color color = new Color();
 
-	public TintedDrawable(SpriteDrawable drawable, Color color)
+	public TintedSpriteDrawable(SpriteDrawable drawable, Color color)
 	{
 		this.drawable = drawable;
-		this.color = color;
+		setColor(color);
 	}
 
 	@Override
@@ -34,5 +34,10 @@ public class TintedDrawable implements SpriteDrawable
 		drawable.draw(sprite, batch);
 
 		batch.setColor(prevColor);
+	}
+
+	public void setColor(Color color)
+	{
+		this.color.set(color);
 	}
 }

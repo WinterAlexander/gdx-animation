@@ -5,7 +5,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntMap;
 import me.winter.gdx.animation.EntityNotFoundException;
 import me.winter.gdx.animation.Entity;
-import me.winter.gdx.animation.drawable.TextureRegionDrawable;
+import me.winter.gdx.animation.drawable.TextureSpriteDrawable;
 
 /**
  * Represents a .SCML project file for Spriter.
@@ -14,7 +14,7 @@ import me.winter.gdx.animation.drawable.TextureRegionDrawable;
  */
 public class SCMLProject
 {
-	private final IntMap<TextureRegionDrawable> assets;
+	private final IntMap<TextureSpriteDrawable> assets;
 	private final Array<Entity> entities;
 
 	public SCMLProject()
@@ -40,12 +40,12 @@ public class SCMLProject
 		throw new EntityNotFoundException(name);
 	}
 
-	public void putAsset(int folderID, int fileID, TextureRegionDrawable asset)
+	public void putAsset(int folderID, int fileID, TextureSpriteDrawable asset)
 	{
 		assets.put(getAssetKey(folderID, fileID), asset);
 	}
 
-	public TextureRegionDrawable getAsset(int folderID, int fileID)
+	public TextureSpriteDrawable getAsset(int folderID, int fileID)
 	{
 		return assets.get(getAssetKey(folderID, fileID));
 	}

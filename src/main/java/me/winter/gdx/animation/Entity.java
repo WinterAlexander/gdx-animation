@@ -3,7 +3,7 @@ package me.winter.gdx.animation;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.Array;
 import me.winter.gdx.animation.drawable.SpriteDrawable;
-import me.winter.gdx.animation.drawable.TintedDrawable;
+import me.winter.gdx.animation.drawable.TintedSpriteDrawable;
 
 /**
  * Represents a set of animation under a common name. Usually associated to a
@@ -59,9 +59,14 @@ public class Entity
 				if(timeline.getName().equals(name))
 					for(TimelineKey key : timeline.getKeys())
 						if(key.getObject() instanceof Sprite)
-							((Sprite)key.getObject()).setDrawable(new TintedDrawable(
-									((Sprite)key.getObject()).getDrawable(),
-									color));
+						{
+							Sprite sprite = (Sprite)key.getObject();
+
+							if(!(sprite.getDrawable() instanceof TintedSpriteDrawable))
+								sprite.setDrawable(new TintedSpriteDrawable(((Sprite)key.getObject()).getDrawable(), color));
+							else
+								((TintedSpriteDrawable)sprite.getDrawable()).setColor(color);
+						}
 	}
 
 	public void setAlpha(float alpha)

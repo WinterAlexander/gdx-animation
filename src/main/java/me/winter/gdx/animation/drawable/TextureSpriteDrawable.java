@@ -10,13 +10,13 @@ import me.winter.gdx.animation.Sprite;
  *
  * @author Alexander Winter
  */
-public class TextureRegionDrawable implements SpriteDrawable
+public class TextureSpriteDrawable implements SpriteDrawable
 {
 	private final TextureRegion region;
 	private final float pivotX, pivotY;
 	private final float width, height;
 
-	public TextureRegionDrawable(TextureRegion region, float pivotX, float pivotY)
+	public TextureSpriteDrawable(TextureRegion region, float pivotX, float pivotY)
 	{
 		this(region,
 				pivotX,
@@ -34,7 +34,7 @@ public class TextureRegionDrawable implements SpriteDrawable
 	 * @param width width of the asset
 	 * @param height height of the asset
 	 */
-	public TextureRegionDrawable(TextureRegion region, float pivotX, float pivotY, float width, float height)
+	public TextureSpriteDrawable(TextureRegion region, float pivotX, float pivotY, float width, float height)
 	{
 		this.region = region;
 		this.pivotX = pivotX;
