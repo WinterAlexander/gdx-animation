@@ -29,7 +29,7 @@ public class TintedSpriteDrawable implements SpriteDrawable
 			return;
 
 		float prevColor = batch.getPackedColor();
-		batch.setColor(color);
+		batch.setColor(batch.getColor().mul(color));
 
 		drawable.draw(sprite, batch);
 
