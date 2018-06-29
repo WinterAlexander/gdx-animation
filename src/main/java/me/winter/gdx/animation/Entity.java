@@ -5,6 +5,8 @@ import com.badlogic.gdx.utils.Array;
 import me.winter.gdx.animation.drawable.SpriteDrawable;
 import me.winter.gdx.animation.drawable.TintedSpriteDrawable;
 
+import java.util.Iterator;
+
 /**
  * Represents a set of animation under a common name. Usually associated to a
  * single game object.
@@ -34,6 +36,20 @@ public class Entity
 
 		for(Animation animation : entity.animations)
 			animations.add(new Animation(animation));
+	}
+
+	public Array<SpriteDrawable> getSpriteDrawables(String name)
+	{
+		Array<SpriteDrawable> drawables = new Array<>();
+
+		for(Animation animation : animations)
+			for(Timeline timeline : animation.getTimelines())
+				if(timeline.getName().equals(name))
+					for(TimelineKey key : timeline.getKeys())
+						if(key.getObject() instanceof Sprite)
+							drawables.add(((Sprite)key.getObject()).getDrawable());
+
+		return drawables;
 	}
 
 	/**
