@@ -1,4 +1,4 @@
-# gdxAnimation
+# gdx-animation
 
 gdxAnimation is a library letting you render your Spriter animations at runtime in the LibGDX game engine. You can easily alter or copy the animations during runtime to customize your animations per example.
 
@@ -6,7 +6,7 @@ The goal of this library isn't to be a port for Spriter on LibGDX but to offer a
 
 ## Trixt0r/spriter
 
-Originally forked from https://github.com/Trixt0r/spriter, gdxAnimation has a different goal than its original fork. The giant changes in the whole structure and the usage of LibGDX explains why it is no longer a fork. Lots of features have been removed to better aim the goal of this library.
+Originally forked from https://github.com/Trixt0r/spriter, gdx-animation has a different goal than its original fork. The giant changes in the whole structure and the usage of LibGDX explains why it is no longer a fork. Lots of features have been removed to better aim the goal of this library.
 
 ## Spriter
 
