@@ -13,12 +13,12 @@ import me.winter.gdx.animation.Mainline;
 import me.winter.gdx.animation.MainlineKey;
 import me.winter.gdx.animation.ObjectRef;
 import me.winter.gdx.animation.Sprite;
+import me.winter.gdx.animation.SpriteTimeline;
 import me.winter.gdx.animation.Timeline;
 import me.winter.gdx.animation.TimelineKey;
 import me.winter.gdx.animation.drawable.TextureSpriteDrawable;
 import me.winter.gdx.animation.math.Curve;
 import me.winter.gdx.animation.math.Curve.CurveType;
-import me.winter.gdx.animation.SpriteTimeline;
 
 import java.io.InputStream;
 

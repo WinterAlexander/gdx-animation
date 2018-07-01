@@ -3,8 +3,8 @@ package me.winter.gdx.animation.scml;
 
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntMap;
-import me.winter.gdx.animation.EntityNotFoundException;
 import me.winter.gdx.animation.Entity;
+import me.winter.gdx.animation.EntityNotFoundException;
 import me.winter.gdx.animation.drawable.TextureSpriteDrawable;
 
 /**

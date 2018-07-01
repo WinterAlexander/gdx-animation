@@ -5,8 +5,6 @@ import com.badlogic.gdx.utils.Array;
 import me.winter.gdx.animation.drawable.SpriteDrawable;
 import me.winter.gdx.animation.drawable.TintedSpriteDrawable;
 
-import java.util.Iterator;
-
 /**
  * Represents a set of animation under a common name. Usually associated to a
  * single game object.

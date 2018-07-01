@@ -2,7 +2,13 @@ package me.winter.gdx.animation.math;
 
 import com.badlogic.gdx.math.Vector2;
 
-import static me.winter.gdx.animation.math.Interpolator.*;
+import static me.winter.gdx.animation.math.Interpolator.bezier;
+import static me.winter.gdx.animation.math.Interpolator.cubic;
+import static me.winter.gdx.animation.math.Interpolator.linear;
+import static me.winter.gdx.animation.math.Interpolator.quadratic;
+import static me.winter.gdx.animation.math.Interpolator.quartic;
+import static me.winter.gdx.animation.math.Interpolator.quintic;
+import static me.winter.gdx.animation.math.Interpolator.solveCubic;
 
 /**
  * Represents a curve in a Spriter SCML file. An instance of this class is responsible for tweening given data. The most
