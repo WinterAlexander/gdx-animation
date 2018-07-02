@@ -3,8 +3,11 @@ package me.winter.gdx.animation;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.OrderedMap;
 import me.winter.gdx.animation.math.Curve;
+
+import java.util.function.Consumer;
 
 /**
  * Represents an animation of a Spriter SCML file. An animation holds {@link Timeline}s and a {@link Mainline} to
@@ -25,6 +28,8 @@ public class Animation
 	private final Array<AnimatedPart> tweenedObjects; //sprites made on runtime by tweening original sprites from animation
 	private final OrderedMap<Integer, Sprite> sprites;
 
+	private final ObjectMap<String, Consumer<AnimatedPart>> transformations = new ObjectMap<>();
+
 	/**
 	 * Milliseconds
 	 */
@@ -43,7 +48,8 @@ public class Animation
 		this.mainline = mainline;
 		this.timelines = timelines;
 
-		tweenedObjects = new Array<>(new AnimatedPart[timelines.size]);
+		tweenedObjects = new Array<>();
+		tweenedObjects.setSize(timelines.size);
 		sprites = new OrderedMap<>();
 
 		for(Timeline timeline : timelines)
@@ -103,6 +109,8 @@ public class Animation
 	{
 		//Get the timelines, the ref's pointing to
 		Timeline timeline = timelines.get(ref.timeline);
+		AnimatedPart tweened = tweenedObjects.get(ref.timeline);
+
 		TimelineKey key = timeline.getKeys().get(ref.key); //get the last previous key
 
 		TimelineKey nextKey;
@@ -134,10 +142,10 @@ public class Animation
 		float timeDiff = timeOfNext - key.getTime();
 		float timeRatio = currentKey.curve.interpolate(0f, 1f, (time - key.getTime()) / timeDiff);
 
+
 		//Tween object
 		AnimatedPart obj1 = key.getObject();
 		AnimatedPart obj2 = nextKey.getObject();
-		AnimatedPart tweened = tweenedObjects.get(ref.timeline);
 
 		Curve curve = key.getCurve();
 
@@ -152,6 +160,11 @@ public class Animation
 			((Sprite)tweened).setDrawable(((Sprite)obj1).getDrawable());
 		}
 
+		Consumer<AnimatedPart> transform = transformations.get(timeline.getName());
+
+		if(transform != null)
+			transform.accept(tweened);
+
 		tweened.unmap(ref.parent != null ? tweenedObjects.get(ref.parent.timeline) : root);
 	}
 
@@ -164,6 +177,16 @@ public class Animation
 	public AnimatedPart getRoot()
 	{
 		return root;
+	}
+
+	public Array<AnimatedPart> getParts()
+	{
+		return tweenedObjects;
+	}
+
+	public ObjectMap<String, Consumer<AnimatedPart>> getTransformations()
+	{
+		return transformations;
 	}
 
 	public Array<Timeline> getTimelines()

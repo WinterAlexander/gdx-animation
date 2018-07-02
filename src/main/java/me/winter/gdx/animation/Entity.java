@@ -5,6 +5,8 @@ import com.badlogic.gdx.utils.Array;
 import me.winter.gdx.animation.drawable.SpriteDrawable;
 import me.winter.gdx.animation.drawable.TintedSpriteDrawable;
 
+import java.util.function.Consumer;
+
 /**
  * Represents a set of animation under a common name. Usually associated to a
  * single game object.
@@ -81,6 +83,21 @@ public class Entity
 							else
 								((TintedSpriteDrawable)sprite.getDrawable()).setColor(color);
 						}
+	}
+
+	public void setTransformation(String timelineName, Consumer<AnimatedPart> transformation)
+	{
+		for(Animation animation : animations)
+			if(transformation == null)
+				animation.getTransformations().remove(timelineName);
+			else
+				animation.getTransformations().put(timelineName, transformation);
+	}
+
+	public void clearTransformations()
+	{
+		for(Animation animation : animations)
+			animation.getTransformations().clear();
 	}
 
 	public void setAlpha(float alpha)
