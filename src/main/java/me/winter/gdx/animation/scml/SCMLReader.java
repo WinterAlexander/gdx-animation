@@ -21,6 +21,7 @@ import me.winter.gdx.animation.math.Curve;
 import me.winter.gdx.animation.math.Curve.CurveType;
 
 import java.io.InputStream;
+import java.util.Locale;
 
 /**
  * File parser for .SCML files (spriter format)
@@ -173,7 +174,7 @@ public class SCMLReader
 			Array<Element> xmlObjectRefs = xmlElement.getChildrenByName("object_ref");
 			Array<Element> xmlBoneRefs = xmlElement.getChildrenByName("bone_ref");
 
-			Curve curve = new Curve(CurveType.valueOf(xmlElement.get("curve_type", "linear").toUpperCase()));
+			Curve curve = new Curve(CurveType.valueOf(xmlElement.get("curve_type", "linear").toUpperCase(Locale.ENGLISH)));
 			curve.constraints.set(xmlElement.getFloat("c1", 0f), xmlElement.getFloat("c2", 0f), xmlElement.getFloat("c3", 0f), xmlElement.getFloat("c4", 0f));
 
 			Array<ObjectRef> objectRefs = new Array<>(xmlBoneRefs.size + xmlObjectRefs.size);
@@ -233,7 +234,7 @@ public class SCMLReader
 
 		for(Element xmlKey : keys)
 		{
-			Curve curve = new Curve(CurveType.valueOf(xmlKey.get("curve_type", "linear").toUpperCase()));
+			Curve curve = new Curve(CurveType.valueOf(xmlKey.get("curve_type", "linear").toUpperCase(Locale.ENGLISH)));
 			curve.constraints.set(xmlKey.getFloat("c1", 0f), xmlKey.getFloat("c2", 0f), xmlKey.getFloat("c3", 0f), xmlKey.getFloat("c4", 0f));
 
 			TimelineKey key = new TimelineKey(xmlKey.getInt("time", 0), xmlKey.getInt("spin", 1), curve);
