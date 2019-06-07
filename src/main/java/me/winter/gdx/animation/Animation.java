@@ -19,7 +19,7 @@ import java.util.function.Consumer;
 public class Animation
 {
 	private final String name;
-	private final int length;
+	private final int length; // millis
 	private boolean looping;
 
 	private final Mainline mainline;
