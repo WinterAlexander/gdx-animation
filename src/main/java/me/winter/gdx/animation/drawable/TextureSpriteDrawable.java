@@ -75,7 +75,7 @@ public class TextureSpriteDrawable implements SpriteDrawable
 				sprite.getScale().y,
 				sprite.getAngle());
 
-		batch.setColor(prevColor);
+		batch.setPackedColor(prevColor);
 	}
 
 	public TextureRegion getRegion()

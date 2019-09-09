@@ -86,7 +86,7 @@ public class Animation
 		for(Sprite sprite : sprites.values())
 			sprite.draw(batch);
 
-		batch.setColor(prevColor);
+		batch.setPackedColor(prevColor);
 	}
 
 	/**
