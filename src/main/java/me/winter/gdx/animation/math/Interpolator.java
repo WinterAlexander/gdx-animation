@@ -77,10 +77,6 @@ public class Interpolator
 	/**
 	 * Solves the equation a*x^3 + b*x^2 + c*x +d = 0.
 	 *
-	 * @param a
-	 * @param b
-	 * @param c
-	 * @param d
 	 * @return the solution of the cubic function if it belongs [0, 1], -1 otherwise.
 	 */
 	public static float solveCubic(float a, float b, float c, float d)

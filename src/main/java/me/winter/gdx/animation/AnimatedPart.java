@@ -6,8 +6,8 @@ import static java.lang.Math.signum;
 
 /**
  * Represents a bone in a Spriter SCML file. A bone holds a {@link #position},
- * {@link #scale}, an {@link #angle} and a {@link #pivot}. Bones are the only
- * objects which can be used as a parent for other tweenable objects.
+ * {@link #scale} and an {@link #angle}. Bones are the only objects which can
+ * be used as a parent for other tweenable objects.
  *
  * @author Alexander Winter
  */

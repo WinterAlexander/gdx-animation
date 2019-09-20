@@ -12,8 +12,7 @@ import static me.winter.gdx.animation.math.Interpolator.solveCubic;
 
 /**
  * Represents a curve in a Spriter SCML file. An instance of this class is responsible for tweening given data. The most
- * important method of this class is {@link #tween(float, float, float)}. Curves can be changed with sub curves {@link
- * Curve#subCurve}.
+ * important method of this class is {@link #interpolate(float, float, float)}.
  *
  * @author Alexander Winter
  */

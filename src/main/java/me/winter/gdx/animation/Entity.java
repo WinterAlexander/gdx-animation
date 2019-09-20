@@ -110,6 +110,7 @@ public class Entity
 	 * Returns an Animation for the specified index
 	 *
 	 * @param index the index of the animation
+	 * @return animation for the specified index
 	 */
 	public Animation getAnimation(int index)
 	{
@@ -130,6 +131,7 @@ public class Entity
 	 * Returns an Animation for the specified name
 	 *
 	 * @param name name of the animation
+	 * @return animation for the specified name
 	 */
 	public Animation getAnimation(String name)
 	{
