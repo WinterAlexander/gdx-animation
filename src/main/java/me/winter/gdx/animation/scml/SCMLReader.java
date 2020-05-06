@@ -1,6 +1,7 @@
 package me.winter.gdx.animation.scml;
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
@@ -16,6 +17,7 @@ import me.winter.gdx.animation.Sprite;
 import me.winter.gdx.animation.SpriteTimeline;
 import me.winter.gdx.animation.Timeline;
 import me.winter.gdx.animation.TimelineKey;
+import me.winter.gdx.animation.drawable.NormalMappedSpriteDrawable;
 import me.winter.gdx.animation.drawable.TextureSpriteDrawable;
 import me.winter.gdx.animation.math.Curve;
 import me.winter.gdx.animation.math.Curve.CurveType;
@@ -99,10 +101,26 @@ public class SCMLReader
 				String[] parts = name.split("/");
 				name = parts[parts.length - 1].replace(".png", "");
 
-				TextureSpriteDrawable asset = new TextureSpriteDrawable(
-						atlas.findRegion(name),
-						file.getFloat("pivot_x", 0f),
-						file.getFloat("pivot_y", 1f));
+				TextureSpriteDrawable asset;
+
+				TextureRegion region = atlas.findRegion(name);
+
+				if(file.hasAttribute("normal"))
+				{
+					String normalName = file.get("normal");
+
+					String[] normalParts = name.split("/");
+					name = normalParts[normalParts.length - 1].replace(".png", "");
+
+					asset = new NormalMappedSpriteDrawable(region,
+							atlas.findRegion(normalName),
+							file.getFloat("pivot_x", 0f),
+							file.getFloat("pivot_y", 1f));
+				}
+				else
+					asset = new TextureSpriteDrawable(region,
+							file.getFloat("pivot_x", 0f),
+							file.getFloat("pivot_y", 1f));
 
 				currentProject.putAsset(folder.getInt("id"), file.getInt("id"), asset);
 			}

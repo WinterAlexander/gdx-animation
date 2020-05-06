@@ -5,6 +5,7 @@ bin/
 classes/
 out/
 *.jar
+target/
 
 # Ignore Gradle GUI config
 gradle-app.setting
