@@ -109,8 +109,8 @@ public class SCMLReader
 				{
 					String normalName = file.get("normal");
 
-					String[] normalParts = name.split("/");
-					name = normalParts[normalParts.length - 1].replace(".png", "");
+					String[] normalParts = normalName.split("/");
+					normalName = normalParts[normalParts.length - 1].replace(".png", "");
 
 					asset = new NormalMappedSpriteDrawable(region,
 							atlas.findRegion(normalName),

@@ -6,6 +6,7 @@ classes/
 out/
 *.jar
 target/
+*.iml
 
 # Ignore Gradle GUI config
 gradle-app.setting
