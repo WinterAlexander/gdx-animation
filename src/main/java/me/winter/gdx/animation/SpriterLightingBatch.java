@@ -18,7 +18,8 @@ public interface SpriterLightingBatch extends Batch
 	 * with the draw parameters. The normal map should be rotated and scaled
 	 * as well as the region.
 	 *
-	 * @param region region to draw
+	 * @param sunshaded sunshaded texture to draw
+	 * @param flat flat texture to shade with the normal
 	 * @param normal normal map
 	 * @param x x position
 	 * @param y y position
@@ -30,7 +31,8 @@ public interface SpriterLightingBatch extends Batch
 	 * @param scaleY scale in y
 	 * @param rotation rotation of the texture
 	 */
-	void drawNormalMapped(TextureRegion region,
+	void drawNormalMapped(TextureRegion sunshaded,
+	          TextureRegion flat,
 	          TextureRegion normal,
 	          float x, float y,
 	          float originX, float originY,
