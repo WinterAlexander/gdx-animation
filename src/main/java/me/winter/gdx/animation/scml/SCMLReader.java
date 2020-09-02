@@ -18,6 +18,7 @@ import me.winter.gdx.animation.SpriteTimeline;
 import me.winter.gdx.animation.Timeline;
 import me.winter.gdx.animation.TimelineKey;
 import me.winter.gdx.animation.drawable.NormalMappedSpriteDrawable;
+import me.winter.gdx.animation.drawable.PreshadedNormalMappedSpriteDrawable;
 import me.winter.gdx.animation.drawable.TextureSpriteDrawable;
 import me.winter.gdx.animation.math.Curve;
 import me.winter.gdx.animation.math.Curve.CurveType;
@@ -112,10 +113,25 @@ public class SCMLReader
 					String[] normalParts = normalName.split("/");
 					normalName = normalParts[normalParts.length - 1].replace(".png", "");
 
-					asset = new NormalMappedSpriteDrawable(region,
-							atlas.findRegion(normalName),
-							file.getFloat("pivot_x", 0f),
-							file.getFloat("pivot_y", 1f));
+
+					if(file.hasAttribute("preshaded"))
+					{
+						String preshadedName = file.get("preshaded");
+
+						String[] preshadedParts = preshadedName.split("/");
+						preshadedName = preshadedParts[preshadedParts.length - 1].replace(".png", "");
+
+						asset = new PreshadedNormalMappedSpriteDrawable(region,
+								atlas.findRegion(normalName),
+								atlas.findRegion(preshadedName),
+								file.getFloat("pivot_x", 0f),
+								file.getFloat("pivot_y", 1f));
+					}
+					else
+						asset = new NormalMappedSpriteDrawable(region,
+								atlas.findRegion(normalName),
+								file.getFloat("pivot_x", 0f),
+								file.getFloat("pivot_y", 1f));
 				}
 				else
 					asset = new TextureSpriteDrawable(region,
