@@ -41,14 +41,6 @@ public class PreshadedNormalMappedSpriteDrawable extends TextureSpriteDrawable
 	@Override
 	public void draw(Sprite sprite, Batch batch)
 	{
-		if(region == null
-				|| region.getTexture() == null
-				|| normalMap == null
-				|| normalMap.getTexture() == null
-				|| preshaded == null
-				|| preshaded.getTexture() == null
-				|| !(batch instanceof SpriterLightingBatch))
-			return;
 
 		float originX = width * getPivotX();
 		float originY = height * getPivotY();
@@ -59,16 +51,28 @@ public class PreshadedNormalMappedSpriteDrawable extends TextureSpriteDrawable
 		tmp.a *= sprite.getAlpha();
 		batch.setColor(tmp);
 
-		((SpriterLightingBatch)batch).drawNormalMapped(region, normalMap, preshaded,
-				sprite.getPosition().x - originX,
-				sprite.getPosition().y - originY,
-				originX,
-				originY,
-				width,
-				height,
-				sprite.getScale().x,
-				sprite.getScale().y,
-				sprite.getAngle());
+		if(batch instanceof SpriterLightingBatch)
+			((SpriterLightingBatch)batch).drawNormalMapped(region, normalMap, preshaded,
+					sprite.getPosition().x - originX,
+					sprite.getPosition().y - originY,
+					originX,
+					originY,
+					width,
+					height,
+					sprite.getScale().x,
+					sprite.getScale().y,
+					sprite.getAngle());
+		else
+			batch.draw(preshaded,
+					sprite.getPosition().x - originX,
+					sprite.getPosition().y - originY,
+					originX,
+					originY,
+					width,
+					height,
+					sprite.getScale().x,
+					sprite.getScale().y,
+					sprite.getAngle());
 
 		batch.setPackedColor(prevColor);
 	}
