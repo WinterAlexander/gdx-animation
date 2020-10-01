@@ -19,11 +19,17 @@ import me.winter.gdx.animation.scml.SCMLLoader.SCMLProjectParameters;
  */
 public class SCMLLoader extends SynchronousAssetLoader<SCMLProject, SCMLProjectParameters>
 {
-	private SCMLReader reader = new SCMLReader();
+	private final SCMLReader reader;
 
 	public SCMLLoader(FileHandleResolver resolver)
 	{
+		this(resolver, new SCMLReader());
+	}
+
+	public SCMLLoader(FileHandleResolver resolver, SCMLReader reader)
+	{
 		super(resolver);
+		this.reader = reader;
 	}
 
 	@Override
