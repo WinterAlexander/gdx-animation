@@ -1,6 +1,7 @@
 package me.winter.gdx.animation.scml;
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
@@ -31,7 +32,7 @@ import java.util.Locale;
 public class SCMLReader
 {
 	private TextureAtlas atlas;
-	private SCMLProject currentProject;
+	protected SCMLProject currentProject;
 
 	/**
 	 * Since zIndex are for timeline but stored in a different section of the xml, they need to be temporarily mapped while loading
@@ -88,7 +89,7 @@ public class SCMLReader
 	 *
 	 * @param folders a list of folders to load
 	 */
-	private void loadAssets(Array<Element> folders)
+	protected void loadAssets(Array<Element> folders)
 	{
 		for(Element folder : folders)
 		{
@@ -99,8 +100,11 @@ public class SCMLReader
 				String[] parts = name.split("/");
 				name = parts[parts.length - 1].replace(".png", "");
 
-				TextureSpriteDrawable asset = new TextureSpriteDrawable(
-						atlas.findRegion(name),
+				TextureSpriteDrawable asset;
+
+				TextureRegion region = atlas.findRegion(name);
+
+				asset = new TextureSpriteDrawable(region,
 						file.getFloat("pivot_x", 0f),
 						file.getFloat("pivot_y", 1f));
 
@@ -114,7 +118,7 @@ public class SCMLReader
 	 *
 	 * @param entities a list of entities to load
 	 */
-	private void loadEntities(Array<Element> entities)
+	protected void loadEntities(Array<Element> entities)
 	{
 		for(Element xmlElement : entities)
 		{
@@ -132,7 +136,7 @@ public class SCMLReader
 	 * @param animations a list of animations to load
 	 * @param entity the entity containing the animations maps
 	 */
-	private void loadAnimations(Array<Element> animations, Entity entity)
+	protected void loadAnimations(Array<Element> animations, Entity entity)
 	{
 		for(Element xmlElement : animations)
 		{
@@ -165,7 +169,7 @@ public class SCMLReader
 	 * @param xmlMainlineKeys a list of mainline keys
 	 * @param mainline the mainline
 	 */
-	private void loadTimelines(Array<Element> xmlMainlineKeys, Array<Element> xmlTimelines, Mainline mainline, Array<Timeline> timelines)
+	protected void loadTimelines(Array<Element> xmlMainlineKeys, Array<Element> xmlTimelines, Mainline mainline, Array<Timeline> timelines)
 	{
 		zIndexTempMap.clear();
 
@@ -228,7 +232,7 @@ public class SCMLReader
 	 *
 	 * @return array of timeline keys
 	 */
-	private Array<TimelineKey> loadTimelineKeys(Array<Element> keys)
+	protected Array<TimelineKey> loadTimelineKeys(Array<Element> keys)
 	{
 		Array<TimelineKey> timelineKeys = new Array<>(keys.size);
 

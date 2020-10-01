@@ -3,7 +3,6 @@ package me.winter.gdx.animation.drawable;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Vector2;
 import me.winter.gdx.animation.Sprite;
 
 /**
@@ -13,14 +12,9 @@ import me.winter.gdx.animation.Sprite;
  */
 public class TextureSpriteDrawable implements SpriteDrawable
 {
-	private final TextureRegion region;
-	private final float pivotX, pivotY;
-	private final float width, height;
-
-	public TextureSpriteDrawable(TextureRegion region, Vector2 pivot)
-	{
-		this(region, pivot.x, pivot.y);
-	}
+	protected final TextureRegion region;
+	protected final float pivotX, pivotY;
+	protected final float width, height;
 
 	public TextureSpriteDrawable(TextureRegion region, float pivotX, float pivotY)
 	{
