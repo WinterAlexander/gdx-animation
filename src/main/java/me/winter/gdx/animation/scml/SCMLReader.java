@@ -17,8 +17,6 @@ import me.winter.gdx.animation.Sprite;
 import me.winter.gdx.animation.SpriteTimeline;
 import me.winter.gdx.animation.Timeline;
 import me.winter.gdx.animation.TimelineKey;
-import me.winter.gdx.animation.drawable.NormalMappedSpriteDrawable;
-import me.winter.gdx.animation.drawable.PreshadedNormalMappedSpriteDrawable;
 import me.winter.gdx.animation.drawable.TextureSpriteDrawable;
 import me.winter.gdx.animation.math.Curve;
 import me.winter.gdx.animation.math.Curve.CurveType;
@@ -34,7 +32,7 @@ import java.util.Locale;
 public class SCMLReader
 {
 	private TextureAtlas atlas;
-	private SCMLProject currentProject;
+	protected SCMLProject currentProject;
 
 	/**
 	 * Since zIndex are for timeline but stored in a different section of the xml, they need to be temporarily mapped while loading
@@ -91,7 +89,7 @@ public class SCMLReader
 	 *
 	 * @param folders a list of folders to load
 	 */
-	private void loadAssets(Array<Element> folders)
+	protected void loadAssets(Array<Element> folders)
 	{
 		for(Element folder : folders)
 		{
@@ -106,37 +104,9 @@ public class SCMLReader
 
 				TextureRegion region = atlas.findRegion(name);
 
-				if(file.hasAttribute("normal"))
-				{
-					String normalName = file.get("normal");
-
-					String[] normalParts = normalName.split("/");
-					normalName = normalParts[normalParts.length - 1].replace(".png", "");
-
-
-					if(file.hasAttribute("preshaded"))
-					{
-						String preshadedName = file.get("preshaded");
-
-						String[] preshadedParts = preshadedName.split("/");
-						preshadedName = preshadedParts[preshadedParts.length - 1].replace(".png", "");
-
-						asset = new PreshadedNormalMappedSpriteDrawable(region,
-								atlas.findRegion(normalName),
-								atlas.findRegion(preshadedName),
-								file.getFloat("pivot_x", 0f),
-								file.getFloat("pivot_y", 1f));
-					}
-					else
-						asset = new NormalMappedSpriteDrawable(region,
-								atlas.findRegion(normalName),
-								file.getFloat("pivot_x", 0f),
-								file.getFloat("pivot_y", 1f));
-				}
-				else
-					asset = new TextureSpriteDrawable(region,
-							file.getFloat("pivot_x", 0f),
-							file.getFloat("pivot_y", 1f));
+				asset = new TextureSpriteDrawable(region,
+						file.getFloat("pivot_x", 0f),
+						file.getFloat("pivot_y", 1f));
 
 				currentProject.putAsset(folder.getInt("id"), file.getInt("id"), asset);
 			}
@@ -148,7 +118,7 @@ public class SCMLReader
 	 *
 	 * @param entities a list of entities to load
 	 */
-	private void loadEntities(Array<Element> entities)
+	protected void loadEntities(Array<Element> entities)
 	{
 		for(Element xmlElement : entities)
 		{
@@ -166,7 +136,7 @@ public class SCMLReader
 	 * @param animations a list of animations to load
 	 * @param entity the entity containing the animations maps
 	 */
-	private void loadAnimations(Array<Element> animations, Entity entity)
+	protected void loadAnimations(Array<Element> animations, Entity entity)
 	{
 		for(Element xmlElement : animations)
 		{
@@ -199,7 +169,7 @@ public class SCMLReader
 	 * @param xmlMainlineKeys a list of mainline keys
 	 * @param mainline the mainline
 	 */
-	private void loadTimelines(Array<Element> xmlMainlineKeys, Array<Element> xmlTimelines, Mainline mainline, Array<Timeline> timelines)
+	protected void loadTimelines(Array<Element> xmlMainlineKeys, Array<Element> xmlTimelines, Mainline mainline, Array<Timeline> timelines)
 	{
 		zIndexTempMap.clear();
 
@@ -262,7 +232,7 @@ public class SCMLReader
 	 *
 	 * @return array of timeline keys
 	 */
-	private Array<TimelineKey> loadTimelineKeys(Array<Element> keys)
+	protected Array<TimelineKey> loadTimelineKeys(Array<Element> keys)
 	{
 		Array<TimelineKey> timelineKeys = new Array<>(keys.size);
 

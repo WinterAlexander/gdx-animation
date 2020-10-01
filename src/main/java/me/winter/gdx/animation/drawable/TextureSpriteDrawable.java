@@ -3,7 +3,6 @@ package me.winter.gdx.animation.drawable;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Vector2;
 import me.winter.gdx.animation.Sprite;
 
 /**
