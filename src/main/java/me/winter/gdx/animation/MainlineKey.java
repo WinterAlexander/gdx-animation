@@ -29,7 +29,7 @@ public class MainlineKey
 		this.curve = other.curve;
 		this.objectRefs = new Array<>(other.objectRefs.size);
 
-		IdentityMap<ObjectRef, ObjectRef> graphIsomorphism = new IdentityMap<>(); //TODO add possibility to not create a new object (pooling or parameter?)
+		IdentityMap<ObjectRef, ObjectRef> graphIsomorphism = new IdentityMap<>();
 
 		for(ObjectRef ref : other.objectRefs)
 			objectRefs.add(ref.clone(graphIsomorphism));

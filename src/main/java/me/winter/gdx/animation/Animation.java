@@ -7,6 +7,7 @@ import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.OrderedMap;
 import me.winter.gdx.animation.math.Curve;
 
+import java.util.Comparator;
 import java.util.function.Consumer;
 
 /**
@@ -18,6 +19,8 @@ import java.util.function.Consumer;
  */
 public class Animation
 {
+	private static final Comparator<Sprite> SPRITE_COMPARATOR = Comparator.comparing(Sprite::getZIndex);
+
 	private final String name;
 	private final int length; // millis
 	private boolean looping;
@@ -26,7 +29,7 @@ public class Animation
 	private final Array<Timeline> timelines;
 
 	private final Array<AnimatedPart> tweenedObjects; //sprites made on runtime by tweening original sprites from animation
-	private final OrderedMap<Integer, Sprite> sprites;
+	private final Array<Sprite> sprites;
 
 	private final ObjectMap<String, Consumer<AnimatedPart>> transformations = new ObjectMap<>();
 
@@ -37,6 +40,8 @@ public class Animation
 	private float speed = 1f, alpha = 1f;
 
 	private AnimatedPart root = new AnimatedPart();
+
+	private boolean zIndexChanged = false;
 
 	public Animation(String name, int length, boolean looping, Mainline mainline, Array<Timeline> timelines)
 	{
@@ -50,21 +55,19 @@ public class Animation
 
 		tweenedObjects = new Array<>();
 		tweenedObjects.setSize(timelines.size);
-		sprites = new OrderedMap<>();
+		sprites = new Array<>();
 
 		for(Timeline timeline : timelines)
 		{
-			if(timeline instanceof SpriteTimeline)
+			if(timeline.getKeys().size > 0 && timeline.getKeys().get(0).getObject() instanceof Sprite)
 			{
 				Sprite sprite = new Sprite();
 				tweenedObjects.set(timeline.getId(), sprite);
-				sprites.put(((SpriteTimeline)timeline).getZIndex(), sprite);
+				sprites.add(sprite);
 			}
 			else
 				tweenedObjects.set(timeline.getId(), new AnimatedPart());
 		}
-
-		sprites.orderedKeys().sort();
 	}
 
 	public Animation(Animation animation)
@@ -78,12 +81,18 @@ public class Animation
 
 	public void draw(Batch batch)
 	{
+		if(zIndexChanged)
+		{
+			sprites.sort(SPRITE_COMPARATOR);
+			zIndexChanged = false;
+		}
+
 		float prevColor = batch.getPackedColor();
 		Color tmp = batch.getColor();
 		tmp.a *= alpha;
 		batch.setColor(tmp);
 
-		for(Sprite sprite : sprites.values())
+		for(Sprite sprite : sprites)
 			sprite.draw(batch);
 
 		batch.setPackedColor(prevColor);
@@ -100,6 +109,9 @@ public class Animation
 		setTime(time + speed * delta);
 
 		MainlineKey currentKey = mainline.getKeyBeforeTime((int)time, looping);
+
+		for(Sprite sprite : sprites)
+			sprite.setVisible(false);
 
 		for(ObjectRef ref : currentKey.objectRefs)
 			update(currentKey, ref, (int)time);
@@ -121,12 +133,14 @@ public class Animation
 			if(!looping)
 			{
 				//no need to tween, stay freezed at first sprite
-				AnimatedPart tweenTarget = tweenedObjects.get(ref.timeline);
 
-				tweenTarget.set(key.getObject());
+				tweened.set(key.getObject());
+
+				if(tweened instanceof Sprite)
+					((Sprite)tweened).setVisible(true);
 
 				AnimatedPart parent = ref.parent != null ? tweenedObjects.get(ref.parent.timeline) : root;
-				tweenTarget.unmap(parent);
+				tweened.unmap(parent);
 				return;
 			}
 
@@ -142,7 +156,6 @@ public class Animation
 		float timeDiff = timeOfNext - key.getTime();
 		float timeRatio = currentKey.curve.interpolate(0f, 1f, (time - key.getTime()) / timeDiff);
 
-
 		//Tween object
 		AnimatedPart obj1 = key.getObject();
 		AnimatedPart obj2 = nextKey.getObject();
@@ -154,10 +167,17 @@ public class Animation
 		curve.interpolateVector(obj1.getPosition(), obj2.getPosition(), timeRatio, tweened.getPosition());
 		curve.interpolateVector(obj1.getScale(), obj2.getScale(), timeRatio, tweened.getScale());
 
-		if(timeline instanceof SpriteTimeline)
+		if(tweened instanceof Sprite)
 		{
 			((Sprite)tweened).setAlpha(curve.interpolate(((Sprite)obj1).getAlpha(), ((Sprite)obj2).getAlpha(), timeRatio));
 			((Sprite)tweened).setDrawable(((Sprite)obj1).getDrawable());
+
+			if(((Sprite)tweened).getZIndex() != ((Sprite)obj1).getZIndex())
+			{
+				((Sprite)tweened).setZIndex(((Sprite)obj1).getZIndex());
+				zIndexChanged = true;
+			}
+			((Sprite)tweened).setVisible(true);
 		}
 
 		Consumer<AnimatedPart> transform = transformations.get(timeline.getName());

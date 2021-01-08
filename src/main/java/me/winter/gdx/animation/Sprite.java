@@ -14,10 +14,12 @@ public class Sprite extends AnimatedPart
 {
 	private SpriteDrawable drawable;
 	private float alpha;
+	private int zIndex;
+	private boolean visible = true;
 
 	public Sprite()
 	{
-		this(null, new Vector2(0, 0), new Vector2(1f, 1f), 0f, 1f);
+		this(null, new Vector2(0, 0), new Vector2(1f, 1f), 0f, 1f, 0);
 	}
 
 	public Sprite(Sprite other)
@@ -26,18 +28,21 @@ public class Sprite extends AnimatedPart
 
 		this.drawable = other.drawable;
 		this.alpha = other.alpha;
+		this.zIndex = other.zIndex;
 	}
 
-	public Sprite(SpriteDrawable drawable, Vector2 position, Vector2 scale, float angle, float alpha)
+	public Sprite(SpriteDrawable drawable, Vector2 position, Vector2 scale, float angle, float alpha, int zIndex)
 	{
 		super(position, scale, angle);
+
 		this.alpha = alpha;
 		this.drawable = drawable;
+		this.zIndex = zIndex;
 	}
 
 	public void draw(Batch batch)
 	{
-		if(drawable != null)
+		if(drawable != null && visible)
 			drawable.draw(this, batch);
 	}
 
@@ -55,6 +60,7 @@ public class Sprite extends AnimatedPart
 		{
 			this.alpha = ((Sprite)object).alpha;
 			this.drawable = ((Sprite)object).drawable;
+			this.zIndex = ((Sprite)object).zIndex;
 		}
 	}
 
@@ -76,5 +82,25 @@ public class Sprite extends AnimatedPart
 	public void setAlpha(float alpha)
 	{
 		this.alpha = alpha;
+	}
+
+	public int getZIndex()
+	{
+		return zIndex;
+	}
+
+	public void setZIndex(int zIndex)
+	{
+		this.zIndex = zIndex;
+	}
+
+	public boolean isVisible()
+	{
+		return visible;
+	}
+
+	public void setVisible(boolean visible)
+	{
+		this.visible = visible;
 	}
 }

@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import me.winter.gdx.animation.Sprite;
 
 /**
- * Draws multiple sprite drawables, one next to the other
+ * Draws multiple sprite drawables, one on top of to the other
  * <p>
  * Created on 2018-07-21.
  *

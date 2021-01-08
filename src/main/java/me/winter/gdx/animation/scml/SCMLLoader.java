@@ -42,7 +42,7 @@ public class SCMLLoader extends SynchronousAssetLoader<SCMLProject, SCMLProjectP
 	@Override
 	public Array<AssetDescriptor> getDependencies(String fileName, FileHandle file, SCMLProjectParameters params)
 	{
-		AssetDescriptor descriptor = new AssetDescriptor<>(params.textureAtlasName, TextureAtlas.class);
+		AssetDescriptor<TextureAtlas> descriptor = new AssetDescriptor<>(params.textureAtlasName, TextureAtlas.class);
 		Array<AssetDescriptor> array = new Array<>();
 		array.add(descriptor);
 		return array;

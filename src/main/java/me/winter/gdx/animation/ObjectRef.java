@@ -2,9 +2,11 @@ package me.winter.gdx.animation;
 
 import com.badlogic.gdx.utils.IdentityMap;
 
+import java.util.Objects;
+
 /**
- * Represents a bone reference in a Spriter SCML file. A bone reference holds a {@link #timeline} and a
- * {@link #key}. A bone reference may have a parent reference.
+ * Represents a bone or object reference in a Spriter SCML file. Holds a
+ * {@link #timeline} and a {@link #key}. May have a parent reference.
  *
  * @author Alexander Winter
  */
@@ -39,5 +41,22 @@ public class ObjectRef
 		ObjectRef ref = new ObjectRef(this, graphIsomorphism);
 		graphIsomorphism.put(this, ref);
 		return ref;
+	}
+
+	@Override
+	public boolean equals(Object o)
+	{
+		if(this == o)
+			return true;
+		if(o == null || getClass() != o.getClass())
+			return false;
+		ObjectRef objectRef = (ObjectRef)o;
+		return key == objectRef.key && timeline == objectRef.timeline;
+	}
+
+	@Override
+	public int hashCode()
+	{
+		return Objects.hash(key, timeline);
 	}
 }

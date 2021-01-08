@@ -14,7 +14,6 @@ import me.winter.gdx.animation.Mainline;
 import me.winter.gdx.animation.MainlineKey;
 import me.winter.gdx.animation.ObjectRef;
 import me.winter.gdx.animation.Sprite;
-import me.winter.gdx.animation.SpriteTimeline;
 import me.winter.gdx.animation.Timeline;
 import me.winter.gdx.animation.TimelineKey;
 import me.winter.gdx.animation.drawable.TextureSpriteDrawable;
@@ -35,9 +34,9 @@ public class SCMLReader
 	protected SCMLProject currentProject;
 
 	/**
-	 * Since zIndex are for timeline but stored in a different section of the xml, they need to be temporarily mapped while loading
+	 * Since zIndex are for timeline but stored in a different section of the xml, they need to be temporarily stored while loading
 	 */
-	private ObjectMap<Integer, Integer> zIndexTempMap = new ObjectMap<>();
+	private final ObjectMap<ObjectRef, Integer> zIndexTmpMap = new ObjectMap<>();
 
 	/**
 	 * Creates a new SCML reader
@@ -171,7 +170,7 @@ public class SCMLReader
 	 */
 	protected void loadTimelines(Array<Element> xmlMainlineKeys, Array<Element> xmlTimelines, Mainline mainline, Array<Timeline> timelines)
 	{
-		zIndexTempMap.clear();
+		zIndexTmpMap.clear();
 
 		for(Element xmlElement : xmlMainlineKeys)
 		{
@@ -198,9 +197,11 @@ public class SCMLReader
 
 				int timeline = xmlObjectRef.getInt("timeline");
 
-				objectRefs.add(new ObjectRef(timeline, xmlObjectRef.getInt("key"), parent));
+				ObjectRef ref = new ObjectRef(timeline, xmlObjectRef.getInt("key"), parent);
 
-				zIndexTempMap.put(timeline, xmlObjectRef.getInt("z_index", 0));
+				objectRefs.add(ref);
+
+				zIndexTmpMap.put(ref, xmlObjectRef.getInt("z_index", 0));
 			}
 
 
@@ -209,30 +210,23 @@ public class SCMLReader
 
 		for(Element xmlElement : xmlTimelines)
 		{
-			Array<TimelineKey> timelineKeys = loadTimelineKeys(xmlElement.getChildrenByName("key"));
-
 			int id = xmlElement.getInt("id");
 			String name = xmlElement.get("name");
 
-			if(timelineKeys.size == 0 || !(timelineKeys.get(0).getObject() instanceof Sprite))
-				timelines.add(new Timeline(id, name, timelineKeys));
-			else
-			{
-				int timelineId = xmlElement.getInt("id", -1);
+			Array<TimelineKey> timelineKeys = loadTimelineKeys(id, xmlElement.getChildrenByName("key"));
 
-				timelines.add(new SpriteTimeline(id, name, timelineKeys, zIndexTempMap.get(timelineId)));
-			}
-
+			timelines.add(new Timeline(id, name, timelineKeys));
 		}
 	}
 	/**
 	 * Iterates through the given timeline keys
 	 *
+	 * @param timelineId id of the parent timeline
 	 * @param keys a list if timeline keys as xml
 	 *
 	 * @return array of timeline keys
 	 */
-	protected Array<TimelineKey> loadTimelineKeys(Array<Element> keys)
+	protected Array<TimelineKey> loadTimelineKeys(int timelineId, Array<Element> keys)
 	{
 		Array<TimelineKey> timelineKeys = new Array<>(keys.size);
 
@@ -240,6 +234,11 @@ public class SCMLReader
 		{
 			Curve curve = new Curve(CurveType.valueOf(xmlKey.get("curve_type", "linear").toUpperCase(Locale.ENGLISH)));
 			curve.constraints.set(xmlKey.getFloat("c1", 0f), xmlKey.getFloat("c2", 0f), xmlKey.getFloat("c3", 0f), xmlKey.getFloat("c4", 0f));
+
+			int keyId = xmlKey.getInt("id", -1);
+
+			if(keyId == -1)
+				throw new RuntimeException("Timeline key has no id");
 
 			TimelineKey key = new TimelineKey(xmlKey.getInt("time", 0), xmlKey.getInt("spin", 1), curve);
 			Element obj = xmlKey.getChild(0); //each key tag contains a single object or bone tag
@@ -255,7 +254,8 @@ public class SCMLReader
 				TextureSpriteDrawable asset = currentProject.getAsset(obj.getInt("folder"), obj.getInt("file")); //corresponding sprite
 
 				float alpha = obj.getFloat("a", 1f);
-				key.setObject(new Sprite(asset, position, scale, angle, alpha));
+				int zIndex = zIndexTmpMap.get(new ObjectRef(timelineId, keyId, null), 0);
+				key.setObject(new Sprite(asset, position, scale, angle, alpha, zIndex));
 			}
 			else if(type.equalsIgnoreCase("bone"))
 				key.setObject(new AnimatedPart(position, scale, angle));
