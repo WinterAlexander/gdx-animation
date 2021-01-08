@@ -39,7 +39,7 @@ public class Animation
 	private float time = 0;
 	private float speed = 1f, alpha = 1f;
 
-	private AnimatedPart root = new AnimatedPart();
+	private final AnimatedPart root = new AnimatedPart();
 
 	private boolean zIndexChanged = false;
 

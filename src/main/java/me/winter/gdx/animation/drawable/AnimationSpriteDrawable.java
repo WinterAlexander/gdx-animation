@@ -14,8 +14,8 @@ import me.winter.gdx.animation.Sprite;
  */
 public class AnimationSpriteDrawable implements SpriteDrawable
 {
-	private Animation animation;
-	private float scale;
+	private final Animation animation;
+	private final float scale;
 
 	public AnimationSpriteDrawable(Animation animation, float scale)
 	{
