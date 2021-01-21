@@ -14,12 +14,16 @@ import me.winter.gdx.animation.Sprite;
 public class TintedSpriteDrawable implements SpriteDrawable
 {
 	private final SpriteDrawable drawable;
-	private final Color color = new Color();
+	private Color color;
 
 	public TintedSpriteDrawable(SpriteDrawable drawable, Color color)
 	{
 		this.drawable = drawable;
-		setColor(color);
+
+		if(color == null)
+			this.color = Color.WHITE;
+		else
+			this.color = color;
 	}
 
 	@Override
@@ -38,6 +42,9 @@ public class TintedSpriteDrawable implements SpriteDrawable
 
 	public void setColor(Color color)
 	{
-		this.color.set(color);
+		if(color == null)
+			this.color = Color.WHITE;
+		else
+			this.color = color;
 	}
 }
