@@ -128,16 +128,26 @@ public class Animation
 		TimelineKey nextKey;
 		int timeOfNext;
 
+		Consumer<AnimatedPart> transform = transformations.get(timeline.getName());
+
 		if(ref.key + 1 == timeline.getKeys().size)
 		{
 			if(!looping)
 			{
 				//no need to tween, stay freezed at first sprite
 
+				if(tweened instanceof Sprite
+						&& key.getObject() instanceof Sprite
+						&& ((Sprite)tweened).getZIndex() != ((Sprite)key.getObject()).getZIndex())
+					zIndexChanged = true;
+
 				tweened.set(key.getObject());
 
 				if(tweened instanceof Sprite)
 					((Sprite)tweened).setVisible(true);
+
+				if(transform != null)
+					transform.accept(tweened);
 
 				AnimatedPart parent = ref.parent != null ? tweenedObjects.get(ref.parent.timeline) : root;
 				tweened.unmap(parent);
@@ -179,8 +189,6 @@ public class Animation
 			}
 			((Sprite)tweened).setVisible(true);
 		}
-
-		Consumer<AnimatedPart> transform = transformations.get(timeline.getName());
 
 		if(transform != null)
 			transform.accept(tweened);
