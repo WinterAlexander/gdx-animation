@@ -55,6 +55,7 @@ public class Entity
 	/**
 	 * Set the drawable of the name specified sprite in all animations for all
 	 * timelines
+	 *
 	 * @param name name of the sprite
 	 * @param drawable drawable to set
 	 */
@@ -66,6 +67,22 @@ public class Entity
 					for(TimelineKey key : timeline.getKeys())
 						if(key.getObject() instanceof Sprite)
 							((Sprite)key.getObject()).setDrawable(drawable);
+	}
+
+	/**
+	 * Sets the name specified sprite in all animations as enabled or not
+	 *
+	 * @param name name of the sprite
+	 * @param enabled true for enabled, otherwise false
+	 */
+	public void setSpriteEnabled(String name, boolean enabled)
+	{
+		for(Animation animation : animations)
+			for(Timeline timeline : animation.getTimelines())
+				if(timeline.getName().equals(name))
+					for(TimelineKey key : timeline.getKeys())
+						if(key.getObject() instanceof Sprite)
+							((Sprite)key.getObject()).setEnabled(enabled);
 	}
 
 	public void tintSprite(String name, Color color)

@@ -15,7 +15,7 @@ public class Sprite extends AnimatedPart
 	private SpriteDrawable drawable;
 	private float alpha;
 	private int zIndex;
-	private boolean visible = true;
+	private boolean visible = true, enabled = true;
 
 	public Sprite()
 	{
@@ -29,6 +29,7 @@ public class Sprite extends AnimatedPart
 		this.drawable = other.drawable;
 		this.alpha = other.alpha;
 		this.zIndex = other.zIndex;
+		this.enabled = other.enabled;
 	}
 
 	public Sprite(SpriteDrawable drawable, Vector2 position, Vector2 scale, float angle, float alpha, int zIndex)
@@ -42,7 +43,7 @@ public class Sprite extends AnimatedPart
 
 	public void draw(Batch batch)
 	{
-		if(drawable != null && visible)
+		if(drawable != null && visible && enabled)
 			drawable.draw(this, batch);
 	}
 
@@ -102,5 +103,15 @@ public class Sprite extends AnimatedPart
 	public void setVisible(boolean visible)
 	{
 		this.visible = visible;
+	}
+
+	public boolean isEnabled()
+	{
+		return enabled;
+	}
+
+	public void setEnabled(boolean enabled)
+	{
+		this.enabled = enabled;
 	}
 }

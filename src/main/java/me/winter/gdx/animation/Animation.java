@@ -144,7 +144,10 @@ public class Animation
 				tweened.set(key.getObject());
 
 				if(tweened instanceof Sprite)
+				{
 					((Sprite)tweened).setVisible(true);
+					((Sprite)tweened).setEnabled(((Sprite)key.getObject()).isEnabled());
+				}
 
 				if(transform != null)
 					transform.accept(tweened);
@@ -188,6 +191,7 @@ public class Animation
 				zIndexChanged = true;
 			}
 			((Sprite)tweened).setVisible(true);
+			((Sprite)tweened).setEnabled(((Sprite)obj1).isEnabled());
 		}
 
 		if(transform != null)
