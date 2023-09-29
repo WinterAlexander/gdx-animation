@@ -10,18 +10,13 @@ import me.winter.gdx.animation.Sprite;
  *
  * @author Alexander Winter
  */
-public class TextureSpriteDrawable implements SpriteDrawable
-{
+public class TextureSpriteDrawable implements SpriteDrawable {
 	protected final TextureRegion region;
 	protected final float pivotX, pivotY;
 	protected final float width, height;
 
-	public TextureSpriteDrawable(TextureRegion region, float pivotX, float pivotY)
-	{
-		this(region,
-				pivotX,
-				pivotY,
-				region != null ? region.getRegionWidth() : 0f,
+	public TextureSpriteDrawable(TextureRegion region, float pivotX, float pivotY) {
+		this(region, pivotX, pivotY, region != null ? region.getRegionWidth() : 0f,
 				region != null ? region.getRegionHeight() : 0f);
 	}
 
@@ -34,8 +29,8 @@ public class TextureSpriteDrawable implements SpriteDrawable
 	 * @param width width of the asset
 	 * @param height height of the asset
 	 */
-	public TextureSpriteDrawable(TextureRegion region, float pivotX, float pivotY, float width, float height)
-	{
+	public TextureSpriteDrawable(TextureRegion region, float pivotX, float pivotY, float width,
+	                             float height) {
 		this.region = region;
 		this.pivotX = pivotX;
 		this.pivotY = pivotY;
@@ -44,8 +39,7 @@ public class TextureSpriteDrawable implements SpriteDrawable
 	}
 
 	@Override
-	public void draw(Sprite sprite, Batch batch)
-	{
+	public void draw(Sprite sprite, Batch batch) {
 		if(region == null || region.getTexture() == null)
 			return;
 
@@ -58,32 +52,22 @@ public class TextureSpriteDrawable implements SpriteDrawable
 		tmp.a *= sprite.getAlpha();
 		batch.setColor(tmp);
 
-		batch.draw(region,
-				sprite.getPosition().x - originX,
-				sprite.getPosition().y - originY,
-				originX,
-				originY,
-				width,
-				height,
-				sprite.getScale().x,
-				sprite.getScale().y,
+		batch.draw(region, sprite.getPosition().x - originX, sprite.getPosition().y - originY,
+				originX, originY, width, height, sprite.getScale().x, sprite.getScale().y,
 				sprite.getAngle());
 
 		batch.setPackedColor(prevColor);
 	}
 
-	public TextureRegion getRegion()
-	{
+	public TextureRegion getRegion() {
 		return region;
 	}
 
-	public float getPivotX()
-	{
+	public float getPivotX() {
 		return pivotX;
 	}
 
-	public float getPivotY()
-	{
+	public float getPivotY() {
 		return pivotY;
 	}
 }

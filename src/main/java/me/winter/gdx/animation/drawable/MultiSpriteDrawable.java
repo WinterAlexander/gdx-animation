@@ -10,18 +10,15 @@ import me.winter.gdx.animation.Sprite;
  *
  * @author Alexander Winter
  */
-public class MultiSpriteDrawable implements SpriteDrawable
-{
+public class MultiSpriteDrawable implements SpriteDrawable {
 	private final SpriteDrawable[] drawables;
 
-	public MultiSpriteDrawable(SpriteDrawable... drawables)
-	{
+	public MultiSpriteDrawable(SpriteDrawable... drawables) {
 		this.drawables = drawables;
 	}
 
 	@Override
-	public void draw(Sprite sprite, Batch batch)
-	{
+	public void draw(Sprite sprite, Batch batch) {
 		for(SpriteDrawable drawable : drawables)
 			drawable.draw(sprite, batch);
 	}

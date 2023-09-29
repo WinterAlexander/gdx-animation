@@ -12,20 +12,17 @@ import me.winter.gdx.animation.Sprite;
  *
  * @author Alexander Winter
  */
-public class AnimationSpriteDrawable implements SpriteDrawable
-{
+public class AnimationSpriteDrawable implements SpriteDrawable {
 	private final Animation animation;
 	private final float scale;
 
-	public AnimationSpriteDrawable(Animation animation, float scale)
-	{
+	public AnimationSpriteDrawable(Animation animation, float scale) {
 		this.animation = animation;
 		this.scale = scale;
 	}
 
 	@Override
-	public void draw(Sprite sprite, Batch batch)
-	{
+	public void draw(Sprite sprite, Batch batch) {
 		AnimatedPart obj = animation.getRoot();
 
 		obj.getPosition().set(sprite.getPosition());

@@ -7,10 +7,8 @@ package me.winter.gdx.animation;
  *
  * @author Alexander Winter
  */
-public class EntityNotFoundException extends RuntimeException
-{
-	public EntityNotFoundException(String name)
-	{
+public class EntityNotFoundException extends RuntimeException {
+	public EntityNotFoundException(String name) {
 		super("Entity with name " + name + " could not be found.");
 	}
 }

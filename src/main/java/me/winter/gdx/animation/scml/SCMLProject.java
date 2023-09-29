@@ -12,15 +12,17 @@ import me.winter.gdx.animation.drawable.TextureSpriteDrawable;
  *
  * @author Alexander Winter
  */
-public class SCMLProject
-{
+public class SCMLProject {
 	private final IntMap<TextureSpriteDrawable> assets;
 	private final Array<Entity> entities;
 
-	public SCMLProject()
-	{
+	public SCMLProject() {
 		this.assets = new IntMap<>();
 		this.entities = new Array<>();
+	}
+
+	public static int getAssetKey(int folder, int file) {
+		return (folder << 16) + file;
 	}
 
 	/**
@@ -28,11 +30,9 @@ public class SCMLProject
 	 *
 	 * @param name the name of the entity
 	 * @return the entity with the given name
-	 *
 	 * @throws EntityNotFoundException if the spriter entity could not be found
 	 */
-	public Entity getEntity(String name)
-	{
+	public Entity getEntity(String name) {
 		for(Entity entity : entities)
 			if(entity.getName().equals(name))
 				return new Entity(entity);
@@ -40,23 +40,15 @@ public class SCMLProject
 		throw new EntityNotFoundException(name);
 	}
 
-	public void putAsset(int folderID, int fileID, TextureSpriteDrawable asset)
-	{
+	public void putAsset(int folderID, int fileID, TextureSpriteDrawable asset) {
 		assets.put(getAssetKey(folderID, fileID), asset);
 	}
 
-	public TextureSpriteDrawable getAsset(int folderID, int fileID)
-	{
+	public TextureSpriteDrawable getAsset(int folderID, int fileID) {
 		return assets.get(getAssetKey(folderID, fileID));
 	}
 
-	public Array<Entity> getSourceEntities()
-	{
+	public Array<Entity> getSourceEntities() {
 		return entities;
-	}
-
-	public static int getAssetKey(int folder, int file)
-	{
-		return (folder << 16) + file;
 	}
 }

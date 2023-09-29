@@ -10,7 +10,6 @@ import me.winter.gdx.animation.Sprite;
  *
  * @author Alexander Winter
  */
-public interface SpriteDrawable
-{
+public interface SpriteDrawable {
 	void draw(Sprite sprite, Batch batch);
 }

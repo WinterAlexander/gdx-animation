@@ -5,25 +5,22 @@ import com.badlogic.gdx.utils.IdentityMap;
 import java.util.Objects;
 
 /**
- * Represents a bone or object reference in a Spriter SCML file. Holds a
- * {@link #timeline} and a {@link #key}. May have a parent reference.
+ * Represents a bone or object reference in a Spriter SCML file. Holds a {@link #timeline} and a
+ * {@link #key}. May have a parent reference.
  *
  * @author Alexander Winter
  */
-public class ObjectRef
-{
+public class ObjectRef {
 	public final int key, timeline;
 	public final ObjectRef parent;
 
-	public ObjectRef(int timeline, int key, ObjectRef parent)
-	{
+	public ObjectRef(int timeline, int key, ObjectRef parent) {
 		this.timeline = timeline;
 		this.key = key;
 		this.parent = parent;
 	}
 
-	public ObjectRef(ObjectRef other, IdentityMap<ObjectRef, ObjectRef> graphIsomorphism)
-	{
+	public ObjectRef(ObjectRef other, IdentityMap<ObjectRef, ObjectRef> graphIsomorphism) {
 		this.key = other.key;
 		this.timeline = other.timeline;
 
@@ -33,8 +30,7 @@ public class ObjectRef
 			this.parent = null;
 	}
 
-	public ObjectRef clone(IdentityMap<ObjectRef, ObjectRef> graphIsomorphism)
-	{
+	public ObjectRef clone(IdentityMap<ObjectRef, ObjectRef> graphIsomorphism) {
 		if(graphIsomorphism.containsKey(this))
 			return graphIsomorphism.get(this);
 
@@ -44,8 +40,7 @@ public class ObjectRef
 	}
 
 	@Override
-	public boolean equals(Object o)
-	{
+	public boolean equals(Object o) {
 		if(this == o)
 			return true;
 		if(o == null || getClass() != o.getClass())
@@ -55,8 +50,7 @@ public class ObjectRef
 	}
 
 	@Override
-	public int hashCode()
-	{
+	public int hashCode() {
 		return Objects.hash(key, timeline);
 	}
 }

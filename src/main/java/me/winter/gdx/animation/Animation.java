@@ -4,47 +4,43 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
-import com.badlogic.gdx.utils.OrderedMap;
 import me.winter.gdx.animation.math.Curve;
 
 import java.util.Comparator;
 import java.util.function.Consumer;
 
+import static java.lang.Math.min;
+
 /**
- * Represents an animation of a Spriter SCML file. An animation holds {@link Timeline}s and a {@link Mainline} to
- * animate objects. Furthermore it holds a {@link #length}, a {@link #name} and whether it is {@link
- * #looping} or not.
+ * Represents an animation of a Spriter SCML file. An animation holds {@link Timeline}s and a
+ * {@link Mainline} to animate objects. Furthermore it holds a {@link #length}, a {@link #name} and
+ * whether it is {@link #looping} or not.
  *
  * @author Alexander Winter
  */
-public class Animation
-{
-	private static final Comparator<Sprite> SPRITE_COMPARATOR = Comparator.comparing(Sprite::getZIndex);
+public class Animation {
+	private static final Comparator<Sprite> SPRITE_COMPARATOR =
+			Comparator.comparing(Sprite::getZIndex);
 
 	private final String name;
 	private final int length; // millis
-	private boolean looping;
-
 	private final Mainline mainline;
 	private final Array<Timeline> timelines;
-
-	private final Array<AnimatedPart> tweenedObjects; //sprites made on runtime by tweening original sprites from animation
+	private final Array<AnimatedPart> tweenedObjects; //sprites made on runtime by tweening
+	// original sprites from animation
 	private final Array<Sprite> sprites;
-
 	private final ObjectMap<String, Consumer<AnimatedPart>> transformations = new ObjectMap<>();
-
+	private final AnimatedPart root = new AnimatedPart();
+	private boolean looping;
 	/**
 	 * Milliseconds
 	 */
 	private float time = 0;
 	private float speed = 1f, alpha = 1f;
-
-	private final AnimatedPart root = new AnimatedPart();
-
 	private boolean zIndexChanged = false;
 
-	public Animation(String name, int length, boolean looping, Mainline mainline, Array<Timeline> timelines)
-	{
+	public Animation(String name, int length, boolean looping, Mainline mainline,
+	                 Array<Timeline> timelines) {
 		this.name = name;
 
 		this.length = length;
@@ -57,32 +53,24 @@ public class Animation
 		tweenedObjects.setSize(timelines.size);
 		sprites = new Array<>();
 
-		for(Timeline timeline : timelines)
-		{
-			if(timeline.getKeys().size > 0 && timeline.getKeys().get(0).getObject() instanceof Sprite)
-			{
+		for(Timeline timeline : timelines) {
+			if(timeline.getKeys().size > 0
+			&& timeline.getKeys().get(0).getObject() instanceof Sprite) {
 				Sprite sprite = new Sprite();
 				tweenedObjects.set(timeline.getId(), sprite);
 				sprites.add(sprite);
-			}
-			else
+			} else
 				tweenedObjects.set(timeline.getId(), new AnimatedPart());
 		}
 	}
 
-	public Animation(Animation animation)
-	{
-		this(animation.name,
-				animation.length,
-				animation.looping,
-				new Mainline(animation.mainline),
-				Timeline.clone(animation.timelines));
+	public Animation(Animation animation) {
+		this(animation.name, animation.length, animation.looping, new Mainline(animation.mainline)
+				, Timeline.clone(animation.timelines));
 	}
 
-	public void draw(Batch batch)
-	{
-		if(zIndexChanged)
-		{
+	public void draw(Batch batch) {
+		if(zIndexChanged) {
 			sprites.sort(SPRITE_COMPARATOR);
 			zIndexChanged = false;
 		}
@@ -99,13 +87,12 @@ public class Animation
 	}
 
 	/**
-	 * Updates this player. This means the current time gets increased by {@link #speed} and is applied to the current
-	 * animation.
+	 * Updates this player. This means the current time gets increased by {@link #speed} and is
+	 * applied to the current animation.
 	 *
 	 * @param delta time in milliseconds
 	 */
-	public void update(float delta)
-	{
+	public void update(float delta) {
 		setTime(time + speed * delta);
 
 		MainlineKey currentKey = mainline.getKeyBeforeTime((int)time, looping);
@@ -117,8 +104,7 @@ public class Animation
 			update(currentKey, ref, (int)time);
 	}
 
-	protected void update(MainlineKey currentKey, ObjectRef ref, int time)
-	{
+	protected void update(MainlineKey currentKey, ObjectRef ref, int time) {
 		//Get the timelines, the ref's pointing to
 		Timeline timeline = timelines.get(ref.timeline);
 		AnimatedPart tweened = tweenedObjects.get(ref.timeline);
@@ -130,10 +116,8 @@ public class Animation
 
 		Consumer<AnimatedPart> transform = transformations.get(timeline.getName());
 
-		if(ref.key + 1 == timeline.getKeys().size)
-		{
-			if(!looping)
-			{
+		if(ref.key + 1 == timeline.getKeys().size) {
+			if(!looping) {
 				//no need to tween, stay freezed at first sprite
 
 				if(tweened instanceof Sprite
@@ -143,8 +127,7 @@ public class Animation
 
 				tweened.set(key.getObject());
 
-				if(tweened instanceof Sprite)
-				{
+				if(tweened instanceof Sprite) {
 					((Sprite)tweened).setVisible(true);
 					((Sprite)tweened).setEnabled(((Sprite)key.getObject()).isEnabled());
 				}
@@ -152,22 +135,23 @@ public class Animation
 				if(transform != null)
 					transform.accept(tweened);
 
-				AnimatedPart parent = ref.parent != null ? tweenedObjects.get(ref.parent.timeline) : root;
+				AnimatedPart parent = ref.parent != null ?
+						tweenedObjects.get(ref.parent.timeline) : root;
 				tweened.unmap(parent);
 				return;
 			}
 
 			nextKey = timeline.getKeys().get(0);
 			timeOfNext = nextKey.getTime() + length; //wrap around
-		}
-		else
-		{
+		} else {
 			nextKey = timeline.getKeys().get(ref.key + 1);
 			timeOfNext = nextKey.getTime();
 		}
 
+
 		float timeDiff = timeOfNext - key.getTime();
-		float timeRatio = currentKey.curve.interpolate(0f, 1f, (time - key.getTime()) / timeDiff);
+		float timeRatio = currentKey.curve.interpolate(0f, 1f,
+				(min(time, timeOfNext) - key.getTime()) / timeDiff);
 
 		//Tween object
 		AnimatedPart obj1 = key.getObject();
@@ -175,18 +159,19 @@ public class Animation
 
 		Curve curve = key.getCurve();
 
-		tweened.setAngle(curve.interpolateAngle(obj1.getAngle(), obj2.getAngle(), timeRatio, key.getSpin()));
+		tweened.setAngle(curve.interpolateAngle(obj1.getAngle(), obj2.getAngle(), timeRatio,
+				key.getSpin()));
 
-		curve.interpolateVector(obj1.getPosition(), obj2.getPosition(), timeRatio, tweened.getPosition());
+		curve.interpolateVector(obj1.getPosition(), obj2.getPosition(), timeRatio,
+				tweened.getPosition());
 		curve.interpolateVector(obj1.getScale(), obj2.getScale(), timeRatio, tweened.getScale());
 
-		if(tweened instanceof Sprite)
-		{
-			((Sprite)tweened).setAlpha(curve.interpolate(((Sprite)obj1).getAlpha(), ((Sprite)obj2).getAlpha(), timeRatio));
+		if(tweened instanceof Sprite) {
+			((Sprite)tweened).setAlpha(curve.interpolate(((Sprite)obj1).getAlpha(),
+					((Sprite)obj2).getAlpha(), timeRatio));
 			((Sprite)tweened).setDrawable(((Sprite)obj1).getDrawable());
 
-			if(((Sprite)tweened).getZIndex() != ((Sprite)obj1).getZIndex())
-			{
+			if(((Sprite)tweened).getZIndex() != ((Sprite)obj1).getZIndex()) {
 				((Sprite)tweened).setZIndex(((Sprite)obj1).getZIndex());
 				zIndexChanged = true;
 			}
@@ -200,34 +185,28 @@ public class Animation
 		tweened.unmap(ref.parent != null ? tweenedObjects.get(ref.parent.timeline) : root);
 	}
 
-	public void reset()
-	{
+	public void reset() {
 		time = 0;
 		update(0);
 	}
 
-	public AnimatedPart getRoot()
-	{
+	public AnimatedPart getRoot() {
 		return root;
 	}
 
-	public Array<AnimatedPart> getParts()
-	{
+	public Array<AnimatedPart> getParts() {
 		return tweenedObjects;
 	}
 
-	public ObjectMap<String, Consumer<AnimatedPart>> getTransformations()
-	{
+	public ObjectMap<String, Consumer<AnimatedPart>> getTransformations() {
 		return transformations;
 	}
 
-	public Array<Timeline> getTimelines()
-	{
+	public Array<Timeline> getTimelines() {
 		return timelines;
 	}
 
-	public String getName()
-	{
+	public String getName() {
 		return name;
 	}
 
@@ -236,13 +215,11 @@ public class Animation
 	 *
 	 * @return current time of this animation
 	 */
-	public float getTime()
-	{
+	public float getTime() {
 		return time;
 	}
 
-	public void setTime(float time)
-	{
+	public void setTime(float time) {
 		if(looping)
 			while(time < 0)
 				time += length;
@@ -258,43 +235,35 @@ public class Animation
 		this.time = time;
 	}
 
-	public float getSpeed()
-	{
+	public float getSpeed() {
 		return speed;
 	}
 
-	public void setSpeed(float speed)
-	{
+	public void setSpeed(float speed) {
 		this.speed = speed;
 	}
 
-	public float getAlpha()
-	{
+	public float getAlpha() {
 		return alpha;
 	}
 
-	public void setAlpha(float alpha)
-	{
+	public void setAlpha(float alpha) {
 		this.alpha = alpha;
 	}
 
-	public int getLength()
-	{
+	public int getLength() {
 		return length;
 	}
 
-	public boolean isLooping()
-	{
+	public boolean isLooping() {
 		return looping;
 	}
 
-	public void setLooping(boolean looping)
-	{
+	public void setLooping(boolean looping) {
 		this.looping = looping;
 	}
 
-	public boolean isDone()
-	{
+	public boolean isDone() {
 		return time == length;
 	}
 }

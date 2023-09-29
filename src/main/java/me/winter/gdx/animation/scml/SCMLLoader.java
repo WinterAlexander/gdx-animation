@@ -17,44 +17,40 @@ import me.winter.gdx.animation.scml.SCMLLoader.SCMLProjectParameters;
  *
  * @author Alexander Winter
  */
-public class SCMLLoader extends SynchronousAssetLoader<SCMLProject, SCMLProjectParameters>
-{
+public class SCMLLoader extends SynchronousAssetLoader<SCMLProject, SCMLProjectParameters> {
 	private final SCMLReader reader;
 
-	public SCMLLoader(FileHandleResolver resolver)
-	{
+	public SCMLLoader(FileHandleResolver resolver) {
 		this(resolver, new SCMLReader());
 	}
 
-	public SCMLLoader(FileHandleResolver resolver, SCMLReader reader)
-	{
+	public SCMLLoader(FileHandleResolver resolver, SCMLReader reader) {
 		super(resolver);
 		this.reader = reader;
 	}
 
 	@Override
-	public SCMLProject load(AssetManager assetManager, String fileName, FileHandle file, SCMLProjectParameters params)
-	{
+	public SCMLProject load(AssetManager assetManager, String fileName, FileHandle file,
+	                        SCMLProjectParameters params) {
 		reader.setAtlas(assetManager.get(params.textureAtlasName));
 		return reader.load(file.read());
 	}
 
 	@Override
-	public Array<AssetDescriptor> getDependencies(String fileName, FileHandle file, SCMLProjectParameters params)
-	{
-		AssetDescriptor<TextureAtlas> descriptor = new AssetDescriptor<>(params.textureAtlasName, TextureAtlas.class);
+	public Array<AssetDescriptor> getDependencies(String fileName, FileHandle file,
+	                                              SCMLProjectParameters params) {
+		AssetDescriptor<TextureAtlas> descriptor = new AssetDescriptor<>(params.textureAtlasName,
+				TextureAtlas.class);
 		Array<AssetDescriptor> array = new Array<>();
 		array.add(descriptor);
 		return array;
 	}
 
-	public static class SCMLProjectParameters extends AssetLoaderParameters<SCMLProject>
-	{
-		public SCMLProjectParameters(String textureAtlasName)
-		{
+	public static class SCMLProjectParameters extends AssetLoaderParameters<SCMLProject> {
+		public String textureAtlasName;
+
+		public SCMLProjectParameters(String textureAtlasName) {
 			this.textureAtlasName = textureAtlasName;
 		}
-
-		public String textureAtlasName;
 	}
 }
