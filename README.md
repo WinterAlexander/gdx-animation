@@ -1,8 +1,10 @@
 # gdx-animation
 
-gdxAnimation is a library letting you render your Spriter animations at runtime in the LibGDX game engine. You can easily alter or copy the animations during runtime to customize your animations per example.
+[![](https://jitpack.io/v/WinterAlexander/gdx-animation.svg)](https://jitpack.io/#WinterAlexander/gdx-animation)
 
-The goal of this library isn't to be a port for Spriter on LibGDX but to offer a clean and nice way to manage your animations in LibGDX. For now, it only supports Spriter but I plan to support new ways to load animations in the future. You can also create all your animations in the code or make your own animation loader that fills the Animation class.
+gdx-animation is a library letting you render your Spriter animations at runtime in the LibGDX game engine. You can easily alter or copy the animations during runtime to customize your animations per example.
+
+The goal of this library isn't to be a port for Spriter on LibGDX but to offer a clean and nice way to manage your animations in LibGDX. You can also create all your animations in the code or make your own animation loader that fills the Animation class.
 
 ## Trixt0r/spriter
 
