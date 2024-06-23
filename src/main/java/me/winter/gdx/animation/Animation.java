@@ -266,4 +266,8 @@ public class Animation {
 	public boolean isDone() {
 		return time == length;
 	}
+
+	public Array<Sprite> getSprites() {
+		return sprites;
+	}
 }
