@@ -22,4 +22,8 @@ public class MultiSpriteDrawable implements SpriteDrawable {
 		for(SpriteDrawable drawable : drawables)
 			drawable.draw(sprite, batch);
 	}
+
+	public SpriteDrawable[] getDrawables() {
+		return drawables;
+	}
 }

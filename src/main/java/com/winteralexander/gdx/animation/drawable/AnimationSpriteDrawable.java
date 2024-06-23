@@ -33,4 +33,12 @@ public class AnimationSpriteDrawable implements SpriteDrawable {
 		animation.update(0f);
 		animation.draw(batch);
 	}
+
+	public Animation getAnimation() {
+		return animation;
+	}
+
+	public float getScale() {
+		return scale;
+	}
 }

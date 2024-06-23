@@ -70,4 +70,12 @@ public class TextureSpriteDrawable implements SpriteDrawable {
 	public float getPivotY() {
 		return pivotY;
 	}
+
+	public float getWidth() {
+		return width;
+	}
+
+	public float getHeight() {
+		return height;
+	}
 }

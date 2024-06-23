@@ -37,6 +37,14 @@ public class TintedSpriteDrawable implements SpriteDrawable {
 		batch.setPackedColor(prevColor);
 	}
 
+	public SpriteDrawable getInnerDrawable() {
+		return drawable;
+	}
+
+	public Color getColor() {
+		return color;
+	}
+
 	public void setColor(Color color) {
 		if(color == null)
 			this.color = Color.WHITE;
