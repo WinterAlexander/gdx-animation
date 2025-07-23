@@ -32,6 +32,9 @@ public class Animation {
 	private final ObjectMap<String, Consumer<AnimatedPart>> transformations = new ObjectMap<>();
 	private final AnimatedPart root = new AnimatedPart();
 	private boolean looping;
+
+	private final ObjectMap<String, Timeline> timelineByName = new ObjectMap<>();
+
 	/**
 	 * Milliseconds
 	 */
@@ -49,6 +52,8 @@ public class Animation {
 
 		this.mainline = mainline;
 		this.timelines = timelines;
+		for(Timeline timeline : timelines)
+			timelineByName.put(timeline.getName(), timeline);
 
 		tweenedObjects = new Array<>();
 		tweenedObjects.setSize(timelines.size);
@@ -269,6 +274,10 @@ public class Animation {
 
 	public boolean isDone() {
 		return time == length;
+	}
+
+	public AnimatedPart getPart(String name) {
+		return timelineByName.get(name).getKeys().get(0).getObject();
 	}
 
 	public Array<Sprite> getSprites() {
