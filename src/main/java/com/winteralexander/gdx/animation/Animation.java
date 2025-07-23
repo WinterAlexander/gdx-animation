@@ -38,7 +38,7 @@ public class Animation {
 	private float time = 0;
 	private float speed = 1f, alpha = 1f;
 	private boolean zIndexChanged = false;
-	private boolean inheritParentAlpha = false;
+	private boolean inheritParentAlpha = true;
 
 	public Animation(String name, int length, boolean looping, Mainline mainline,
 	                 Array<Timeline> timelines) {
