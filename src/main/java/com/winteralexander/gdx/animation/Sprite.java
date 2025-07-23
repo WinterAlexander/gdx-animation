@@ -12,28 +12,29 @@ import com.winteralexander.gdx.animation.drawable.SpriteDrawable;
  */
 public class Sprite extends AnimatedPart {
 	private SpriteDrawable drawable;
-	private float alpha;
-	private int zIndex;
+	private int zIndex = 0;
 	private boolean visible = true, enabled = true;
 
 	public Sprite() {
-		this(null, new Vector2(0, 0), new Vector2(1f, 1f), 0f, 1f, 0);
+		super();
 	}
 
 	public Sprite(Sprite other) {
 		super(other);
 
 		this.drawable = other.drawable;
-		this.alpha = other.alpha;
 		this.zIndex = other.zIndex;
 		this.enabled = other.enabled;
 	}
 
-	public Sprite(SpriteDrawable drawable, Vector2 position, Vector2 scale, float angle,
-	              float alpha, int zIndex) {
-		super(position, scale, angle);
+	public Sprite(SpriteDrawable drawable,
+	              Vector2 position,
+	              Vector2 scale,
+	              float angle,
+	              float alpha,
+	              int zIndex) {
+		super(position, scale, angle, alpha);
 
-		this.alpha = alpha;
 		this.drawable = drawable;
 		this.zIndex = zIndex;
 	}
@@ -53,7 +54,6 @@ public class Sprite extends AnimatedPart {
 		super.set(object);
 
 		if(object instanceof Sprite) {
-			this.alpha = ((Sprite)object).alpha;
 			this.drawable = ((Sprite)object).drawable;
 			this.zIndex = ((Sprite)object).zIndex;
 		}
@@ -65,14 +65,6 @@ public class Sprite extends AnimatedPart {
 
 	public void setDrawable(SpriteDrawable drawable) {
 		this.drawable = drawable;
-	}
-
-	public float getAlpha() {
-		return alpha;
-	}
-
-	public void setAlpha(float alpha) {
-		this.alpha = alpha;
 	}
 
 	public int getZIndex() {

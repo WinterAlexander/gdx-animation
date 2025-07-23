@@ -65,8 +65,11 @@ public class Animation {
 	}
 
 	public Animation(Animation animation) {
-		this(animation.name, animation.length, animation.looping, new Mainline(animation.mainline)
-				, Timeline.clone(animation.timelines));
+		this(animation.name,
+				animation.length,
+				animation.looping,
+				new Mainline(animation.mainline),
+				Timeline.clone(animation.timelines));
 	}
 
 	public void draw(Batch batch) {

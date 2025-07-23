@@ -12,26 +12,26 @@ import static java.lang.Math.signum;
  * @author Alexander Winter
  */
 public class AnimatedPart {
-	private final Vector2 position, scale;
-	private float angle;
+	private final Vector2 position = new Vector2(), scale = new Vector2();
+	private float angle = 0f, alpha = 1f;
 
 	/**
 	 * Constructor for root
 	 */
-	public AnimatedPart() {
-		this(new Vector2(), new Vector2(1, 1), 0);
-	}
+	public AnimatedPart() {}
 
 	public AnimatedPart(AnimatedPart other) {
-		this.position = new Vector2(other.position);
-		this.scale = new Vector2(other.scale);
+		this.position.set(other.position);
+		this.scale.set(other.scale);
 		this.angle = other.angle;
+		this.alpha = other.alpha;
 	}
 
-	public AnimatedPart(Vector2 position, Vector2 scale, float angle) {
-		this.position = position;
-		this.scale = scale;
+	public AnimatedPart(Vector2 position, Vector2 scale, float angle, float alpha) {
+		this.position.set(position);
+		this.scale.set(scale);
 		this.angle = angle;
+		this.alpha = alpha;
 	}
 
 	/**
@@ -40,9 +40,10 @@ public class AnimatedPart {
 	 * @param object the object
 	 */
 	public void set(AnimatedPart object) {
-		this.angle = object.angle;
-		this.position.set(object.position.x, object.position.y);
-		this.scale.set(object.scale.x, object.scale.y);
+		angle = object.angle;
+		position.set(object.position.x, object.position.y);
+		scale.set(object.scale.x, object.scale.y);
+		alpha = object.alpha;
 	}
 
 	/**
@@ -53,6 +54,7 @@ public class AnimatedPart {
 	public void unmap(AnimatedPart parent) {
 		this.angle *= signum(parent.scale.x) * signum(parent.scale.y);
 		this.angle += parent.angle;
+		this.alpha *= parent.alpha;
 		this.scale.scl(parent.scale);
 		this.position.scl(parent.scale);
 		this.position.rotate(parent.angle);
@@ -110,5 +112,13 @@ public class AnimatedPart {
 
 	public void setAngle(float angle) {
 		this.angle = angle;
+	}
+
+	public float getAlpha() {
+		return alpha;
+	}
+
+	public void setAlpha(float alpha) {
+		this.alpha = alpha;
 	}
 }

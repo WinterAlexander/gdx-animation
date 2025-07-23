@@ -231,16 +231,16 @@ public class SCMLReader {
 			Vector2 scale = new Vector2(obj.getFloat("scale_x", 1f), obj.getFloat("scale_y", 1f));
 
 			float angle = obj.getFloat("angle", 0f);
+			float alpha = obj.getFloat("a", 1f);
 
 			if(type.equalsIgnoreCase("object") || type.equalsIgnoreCase("sprite")) {
 				TextureSpriteDrawable asset = currentProject.getAsset(obj.getInt("folder"),
 						obj.getInt("file")); //corresponding sprite
 
-				float alpha = obj.getFloat("a", 1f);
 				int zIndex = zIndexTmpMap.get(new ObjectRef(timelineId, keyId, null), 0);
 				key.setObject(new Sprite(asset, position, scale, angle, alpha, zIndex));
 			} else if(type.equalsIgnoreCase("bone"))
-				key.setObject(new AnimatedPart(position, scale, angle));
+				key.setObject(new AnimatedPart(position, scale, angle, alpha));
 
 
 			timelineKeys.add(key);
