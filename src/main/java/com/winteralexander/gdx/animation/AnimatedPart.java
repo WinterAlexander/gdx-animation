@@ -51,14 +51,15 @@ public class AnimatedPart {
 	 *
 	 * @param parent the parent bone of this bone
 	 */
-	public void unmap(AnimatedPart parent) {
-		this.angle *= signum(parent.scale.x) * signum(parent.scale.y);
-		this.angle += parent.angle;
-		this.alpha *= parent.alpha;
-		this.scale.scl(parent.scale);
-		this.position.scl(parent.scale);
-		this.position.rotate(parent.angle);
-		this.position.add(parent.position);
+	public void unmap(AnimatedPart parent, boolean inheritParentAlpha) {
+		angle *= signum(parent.scale.x) * signum(parent.scale.y);
+		angle += parent.angle;
+		if(inheritParentAlpha)
+			alpha *= parent.alpha;
+		scale.scl(parent.scale);
+		position.scl(parent.scale);
+		position.rotate(parent.angle);
+		position.add(parent.position);
 	}
 
 	@Override

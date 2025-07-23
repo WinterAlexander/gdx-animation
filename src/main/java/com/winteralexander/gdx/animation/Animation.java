@@ -38,6 +38,7 @@ public class Animation {
 	private float time = 0;
 	private float speed = 1f, alpha = 1f;
 	private boolean zIndexChanged = false;
+	private boolean inheritParentAlpha = false;
 
 	public Animation(String name, int length, boolean looping, Mainline mainline,
 	                 Array<Timeline> timelines) {
@@ -140,7 +141,7 @@ public class Animation {
 
 				AnimatedPart parent = ref.parent != null ?
 						tweenedObjects.get(ref.parent.timeline) : root;
-				tweened.unmap(parent);
+				tweened.unmap(parent, inheritParentAlpha);
 				return;
 			}
 
@@ -185,7 +186,7 @@ public class Animation {
 		if(transform != null)
 			transform.accept(tweened);
 
-		tweened.unmap(ref.parent != null ? tweenedObjects.get(ref.parent.timeline) : root);
+		tweened.unmap(ref.parent != null ? tweenedObjects.get(ref.parent.timeline) : root, inheritParentAlpha);
 	}
 
 	public void reset() {
@@ -272,5 +273,13 @@ public class Animation {
 
 	public Array<Sprite> getSprites() {
 		return sprites;
+	}
+
+	public boolean spritesInheritParentAlpha() {
+		return inheritParentAlpha;
+	}
+
+	public void setSpritesInheritParentAlpha(boolean inheritParentAlpha) {
+		this.inheritParentAlpha = inheritParentAlpha;
 	}
 }
