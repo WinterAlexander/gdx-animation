@@ -277,6 +277,9 @@ public class Animation {
 	}
 
 	public AnimatedPart getPart(String name) {
+		if(!timelineByName.containsKey(name))
+			return null;
+
 		return timelineByName.get(name).getKeys().get(0).getObject();
 	}
 
