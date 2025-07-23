@@ -172,10 +172,10 @@ public class Animation {
 		curve.interpolateVector(obj1.getPosition(), obj2.getPosition(), timeRatio,
 				tweened.getPosition());
 		curve.interpolateVector(obj1.getScale(), obj2.getScale(), timeRatio, tweened.getScale());
+		tweened.setAlpha(curve.interpolate(obj1.getAlpha(),
+				obj2.getAlpha(), timeRatio));
 
 		if(tweened instanceof Sprite) {
-			((Sprite)tweened).setAlpha(curve.interpolate(((Sprite)obj1).getAlpha(),
-					((Sprite)obj2).getAlpha(), timeRatio));
 			((Sprite)tweened).setDrawable(((Sprite)obj1).getDrawable());
 
 			if(((Sprite)tweened).getZIndex() != ((Sprite)obj1).getZIndex()) {
